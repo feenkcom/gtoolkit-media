@@ -1,23 +1,23 @@
 Class {
-	#name : #WaitfreePriorityQueueTest,
+	#name : #AtomicSharedPriorityQueueTest,
 	#superclass : #TestCase,
 	#category : #'GToolkit-Images-Tests'
 }
 
 { #category : #tests }
-WaitfreePriorityQueueTest >> testNextIfNone [
+AtomicSharedPriorityQueueTest >> testNextIfNone [
 
 	| queue |
 
 	"Test removing first element"
-	queue := WaitfreePriorityQueue new.
+	queue := AtomicSharedPriorityQueue new.
 	queue
-		nextPut: (WaitfreePriorityTestEntry priority: 0);
-		nextPut: (WaitfreePriorityTestEntry priority: 5);
-		nextPut: (WaitfreePriorityTestEntry priority: 6);
-		nextPut: (WaitfreePriorityTestEntry priority: 8);
-		nextPut: (WaitfreePriorityTestEntry priority: 7);
-		nextPut: (WaitfreePriorityTestEntry priority: 1).
+		nextPut: (AtomicSharedPriorityQueueTestEntry priority: 0);
+		nextPut: (AtomicSharedPriorityQueueTestEntry priority: 5);
+		nextPut: (AtomicSharedPriorityQueueTestEntry priority: 6);
+		nextPut: (AtomicSharedPriorityQueueTestEntry priority: 8);
+		nextPut: (AtomicSharedPriorityQueueTestEntry priority: 7);
+		nextPut: (AtomicSharedPriorityQueueTestEntry priority: 1).
 
 	self assert: queue nextOrNil priority equals: 0.
 	self assert: queue size equals: 5.

@@ -20,7 +20,7 @@ Internal Representation and Key Implementation Points.
     Implementation Points
 "
 Class {
-	#name : #WaitfreePriorityTestEntry,
+	#name : #AtomicSharedPriorityQueueTestEntry,
 	#superclass : #Object,
 	#instVars : [
 		'priority'
@@ -29,7 +29,7 @@ Class {
 }
 
 { #category : #'instance creation' }
-WaitfreePriorityTestEntry class >> priority: aNumber [
+AtomicSharedPriorityQueueTestEntry class >> priority: aNumber [
 
 	^self new
 		priority: aNumber;
@@ -37,7 +37,7 @@ WaitfreePriorityTestEntry class >> priority: aNumber [
 ]
 
 { #category : #printing }
-WaitfreePriorityTestEntry >> printOn: aStream [
+AtomicSharedPriorityQueueTestEntry >> printOn: aStream [
 
 	super printOn: aStream.
 	aStream 
@@ -47,11 +47,11 @@ WaitfreePriorityTestEntry >> printOn: aStream [
 ]
 
 { #category : #accessing }
-WaitfreePriorityTestEntry >> priority [
+AtomicSharedPriorityQueueTestEntry >> priority [
 	^ priority
 ]
 
 { #category : #accessing }
-WaitfreePriorityTestEntry >> priority: anObject [
+AtomicSharedPriorityQueueTestEntry >> priority: anObject [
 	priority := anObject
 ]
