@@ -79,7 +79,8 @@ BlImageLoadValuable >> getBuffer [
 	[ asyncFile readByteCount: file size fromFilePosition: 0 onCompletionDo: 
 		[ :buf | buffer := buf.  fileSemaphore signal ].
         fileSemaphore wait. ] ensure: [ asyncFile close ].
-
+	"Hack to work around AsyncFile returning a string instead of a ByteArray"
+	ByteArray adoptInstance: buffer.
 	^buffer
 ]
 
