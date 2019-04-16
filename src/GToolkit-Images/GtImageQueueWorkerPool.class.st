@@ -44,3 +44,21 @@ GtImageQueueWorkerPool >> initialize [
 	taskQueue := AtomicSharedPriorityQueue new.
 	self name: 'ImageWorker-', self identityHash asString.
 ]
+
+{ #category : #printing }
+GtImageQueueWorkerPool >> printOn: aStream [
+	| freeWorkers | 
+	freeWorkers := workers select: #isFree.
+	aStream
+		nextPutAll: self class name;
+		nextPutAll: '(';
+		nextPutAll: 'name:';
+		nextPutAll: name;
+		nextPutAll: 'poolMaxSize: ';
+		print: poolMaxSize;
+		nextPutAll: '; busyWorkers: ';
+		print: workers size - freeWorkers size;
+		nextPutAll: '; freeWorkers: ';
+		print: freeWorkers size;
+		nextPutAll: ')'
+]

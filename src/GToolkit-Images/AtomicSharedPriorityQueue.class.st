@@ -35,7 +35,7 @@ AtomicSharedPriorityQueue >> nextIfNone: aBlock [
 	Evaluate a block if attempt is failed i.e. there is no items available or queue is locked by another process"
 
 	| first item object previous highest highestPrevious |
-ContextStackSignal emit.
+
 	(first := dummy makeCircular) == dummy  ifTrue: [ 
 		"queue is either empty or currently locked by other feeder,
 		just give a quick answer that item not found"
@@ -45,7 +45,7 @@ ContextStackSignal emit.
 	[ (object := first object) == dummy ] whileTrue: [
 		first isCircular ifTrue: [ 
 			self signalNoMoreItems. 
-			dummy next: first. ^ nil ].
+			dummy next: first. ^ aBlock value ].
 		first := first next.
 	].
 
