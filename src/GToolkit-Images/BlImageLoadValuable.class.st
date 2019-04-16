@@ -92,7 +92,7 @@ BlImageLoadValuable >> getForm [
 
 	"newForm := ImageReadWriter gtFormFromFileReference: file."
 	newForm := ImageReadWriter gtFormFromBuffer: self getBuffer.
-	self extent ifNotNil: [ newForm := newForm scaledToSize: self extent ].
+	self extent ifNotNil: [ newForm := newForm scaledIntoFormOfSize: self extent ].
 	^newForm
 ]
 
