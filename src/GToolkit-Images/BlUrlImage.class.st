@@ -20,10 +20,9 @@ BlUrlImage >> file: aFileReference [
 	"Load the supplied file in the background processor (which will update the receiver when done"
 
 	file := aFileReference asFileReference.
-	GtImageQueueWorkerPool current schedule:
-		(BlImageLoadValuable file: file element: self).
-
-
+	TKTConfiguration processProvider: GtTKTBackgroundProcessProvider new during: [ 
+		GtImageQueueWorkerPool current schedule:
+			(BlImageLoadValuable file: file element: self) ].
 
 ]
 

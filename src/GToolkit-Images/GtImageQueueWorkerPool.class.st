@@ -19,8 +19,6 @@ Class {
 GtImageQueueWorkerPool class >> current [
 
 	^Current ifNil: [ 
-		"We should be using services.  Just change the default profile for now."
-		TKTConfiguration profileNamed: #gtDevelopment.
 		Current := self new
 			poolMaxSize: 1;
 			start;
