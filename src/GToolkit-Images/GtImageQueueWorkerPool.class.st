@@ -12,13 +12,15 @@ Class {
 	#classVars : [
 		'Current'
 	],
-	#category : #'GToolkit-Images-Model'
+	#category : #'GToolkit-Images-TaskIt'
 }
 
 { #category : #accessing }
 GtImageQueueWorkerPool class >> current [
 
 	^Current ifNil: [ 
+		"We should be using services.  Just change the default profile for now."
+		TKTConfiguration profileNamed: #gtDevelopment.
 		Current := self new
 			poolMaxSize: 1;
 			start;
@@ -27,6 +29,7 @@ GtImageQueueWorkerPool class >> current [
 
 { #category : #acccessing }
 GtImageQueueWorkerPool class >> stopCurrent [
+	<script>
 	"Stop the default worker pool and remove the reference to it"
 
 	Current ifNil: [ ^self ].
