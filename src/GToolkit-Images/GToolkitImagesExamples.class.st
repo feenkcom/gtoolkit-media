@@ -16,7 +16,7 @@ GToolkitImagesExamples >> gridForDirectory: aFileReference [
 		c horizontal fitContent.
 		c vertical fitContent ].
 
-	jpgs := aFileReference asFileReference children 
+	jpgs := aFileReference asFileReference children sorted
 		select: [ :each | each extension asLowercase = 'jpg' ].
 	previewSize := 200@200.
 	children :=  jpgs collect: [ :file |
