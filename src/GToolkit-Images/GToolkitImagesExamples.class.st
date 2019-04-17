@@ -33,6 +33,7 @@ GToolkitImagesExamples >> gridForDirectory: aFileReference [
 
 	space := BlSpace new.
 	space root addChild: scrollPane.
+	space title: 'Gallery on: ', aFileReference pathString.
 	space show.
 	^space
 ]
