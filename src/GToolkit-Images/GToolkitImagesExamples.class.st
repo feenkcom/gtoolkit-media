@@ -8,7 +8,7 @@ Class {
 GToolkitImagesExamples >> gridForDirectory: aFileReference [
 	"Answer an element that displays the images in aFileReference in a grid"
 
-	| gridElement scrollPane jpgs previewSize children |
+	| gridElement scrollPane jpgs previewSize children space |
 
 	gridElement := BlElement new.
 	gridElement layout: (BlGridLayout new columnCount: 2; cellSpacing: 2).
@@ -31,7 +31,10 @@ GToolkitImagesExamples >> gridForDirectory: aFileReference [
 		c vertical matchParent ].
 	scrollPane addChild: gridElement.
 
-	^ scrollPane.
+	space := BlSpace new.
+	space root addChild: scrollPane.
+	space show.
+	^space
 ]
 
 { #category : #examples }
