@@ -16,6 +16,12 @@ BlUrlImage class >> file: aFileReference [
 ]
 
 { #category : #accessing }
+BlUrlImage >> file [ 
+
+	^file
+]
+
+{ #category : #accessing }
 BlUrlImage >> file: aFileReference [
 	"Load the supplied file in the background processor (which will update the receiver when done"
 

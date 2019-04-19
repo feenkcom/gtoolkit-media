@@ -24,7 +24,7 @@ GToolkitImagesExamples >> gridElementForDirectory: aFileReference [
 				size: previewSize;
 				file: file;
 				yourself ].
-	children inspect.
+
 	gridElement addChildren: children.
 	scrollPane := BlScrollableElement new.
 	scrollPane constraintsDo: [ :c |
