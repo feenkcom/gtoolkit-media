@@ -5,10 +5,10 @@ Class {
 }
 
 { #category : #examples }
-GToolkitImagesExamples >> gridForDirectory: aFileReference [
+GToolkitImagesExamples >> gridElementForDirectory: aFileReference [
 	"Answer an element that displays the images in aFileReference in a grid"
 
-	| gridElement scrollPane jpgs previewSize children space |
+	| gridElement scrollPane jpgs previewSize children |
 
 	gridElement := BlElement new.
 	gridElement layout: (BlGridLayout new columnCount: 2; cellSpacing: 2).
@@ -24,6 +24,7 @@ GToolkitImagesExamples >> gridForDirectory: aFileReference [
 				size: previewSize;
 				file: file;
 				yourself ].
+	children inspect.
 	gridElement addChildren: children.
 	scrollPane := BlScrollableElement new.
 	scrollPane constraintsDo: [ :c |
@@ -31,9 +32,20 @@ GToolkitImagesExamples >> gridForDirectory: aFileReference [
 		c vertical matchParent ].
 	scrollPane addChild: gridElement.
 
+	^scrollPane
+]
+
+{ #category : #examples }
+GToolkitImagesExamples >> gridSpaceForDirectory: aFileReference [
+	"Open a BlSpace that displays the images in aFileReference in a grid"
+
+	| scrollPane space |
+
+	scrollPane := self gridElementForDirectory: aFileReference.
+
 	space := BlSpace new.
 	space root addChild: scrollPane.
-	space title: 'Gallery on: ', aFileReference pathString.
+	space title: 'Gallery on: ', aFileReference asFileReference pathString.
 	space show.
 	^space
 ]
