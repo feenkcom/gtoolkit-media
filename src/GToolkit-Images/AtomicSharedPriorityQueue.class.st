@@ -29,6 +29,35 @@ Class {
 	#category : #'GToolkit-Images-Model'
 }
 
+{ #category : #ui }
+AtomicSharedPriorityQueue >> gtItemsFor: aView [
+	"<gtView>"
+	| aList |
+
+	aList := aView columnedList
+		title: 'Items' translated;
+		priority: 50;
+		items: [ self itemArray ].
+
+	aList column
+		title: 'Index' translated;
+		width: 30;
+		item: [ :eachItem :eachIndex | eachIndex asRopedText foreground: Color gray].
+	
+	aList column
+		title: 'Object' translated;
+		item: [ :eachItem :eachIndex | 
+			eachItem object == dummy ifTrue: [ '<Zombie>' ] ifFalse: [ eachItem object ] ];
+		itemFormat: [ :eachItem | eachItem asString ].
+
+	aList column
+		title: 'Priority' translated;
+		item: [ :eachItem :eachIndex | 
+			eachItem object == dummy ifTrue: [ '<Zombie>' ] ifFalse: [ eachItem object taskPriority ] ].
+
+	^ aList
+]
+
 { #category : #accessing }
 AtomicSharedPriorityQueue >> nextIfNone: aBlock [
 	"Attempt to fetch the next highest priority item from queue (0 = highest priority). 
@@ -39,13 +68,14 @@ AtomicSharedPriorityQueue >> nextIfNone: aBlock [
 	(first := dummy makeCircular) == dummy  ifTrue: [ 
 		"queue is either empty or currently locked by other feeder,
 		just give a quick answer that item not found"
-		^ aBlock value ]. 
+		^ aBlock value ].
 
 	"Remove any zombie objects from the start of the list"
 	[ (object := first object) == dummy ] whileTrue: [
 		first isCircular ifTrue: [ 
 			self signalNoMoreItems. 
-			dummy next: first. ^ aBlock value ].
+			dummy next: first. 
+			^ aBlock value ].
 		first := first next.
 	].
 
@@ -85,7 +115,7 @@ AtomicSharedPriorityQueue >> nextIfNone: aBlock [
 			ifFalse: [ 
 				highest object: dummy.
 				highestPrevious ifNotNil: [ 
-					highestPrevious next: item next.
+					highestPrevious next: highest next.
 					dummy next: first ]
 				ifNil: 
 					[ dummy next: highest next ] ].

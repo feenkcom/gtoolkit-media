@@ -86,13 +86,26 @@ BlImageLoadValuable >> getBuffer [
 
 { #category : #private }
 BlImageLoadValuable >> getForm [
+	"Answer the scaled form for the receiver's element.
+	For now always re-read the form from disk, possible futures include:
+	If the receiver doesn't have a form, or it has increased in size, load from disk and scale.
+	If the form is being reduced in size, just scale the existing form"
+
+	| newForm |
+
+	newForm := self getNewForm.
+	newForm extent = self extent ifFalse:
+		[ newForm := newForm scaledIntoFormOfSize: self extent ].
+	^newForm
+]
+
+{ #category : #private }
+BlImageLoadValuable >> getNewForm [
 	"Retrieve the image from the file and scale if necessary"
 
 	| newForm |
 
-	"newForm := ImageReadWriter gtFormFromFileReference: file."
 	newForm := ImageReadWriter gtFormFromBuffer: self getBuffer.
-	self extent ifNotNil: [ newForm := newForm scaledIntoFormOfSize: self extent ].
 	^newForm
 ]
 
@@ -107,7 +120,18 @@ BlImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
 { #category : #acccessing }
 BlImageLoadValuable >> taskPriority [
 
-	^0
+	| rootBounds elementBounds |
+
+	element isAttachedToSceneGraph ifFalse: 
+		"The element is probably being inspected, assume that's what the user wants to see"
+		[ ^0 ].
+	rootBounds := element space root bounds asRectangle.
+	elementBounds := element boundsInSpace.
+
+	"If the element is visible, load ASAP"
+	(rootBounds containsRect: elementBounds) ifTrue: [ ^0 ].
+	"Otherwise, priority is proportional to distance from viewable area"
+	^rootBounds center distanceTo: elementBounds center
 ]
 
 { #category : #evaluating }

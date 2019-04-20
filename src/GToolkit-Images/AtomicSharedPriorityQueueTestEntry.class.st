@@ -55,3 +55,8 @@ AtomicSharedPriorityQueueTestEntry >> priority [
 AtomicSharedPriorityQueueTestEntry >> priority: anObject [
 	priority := anObject
 ]
+
+{ #category : #accessing }
+AtomicSharedPriorityQueueTestEntry >> taskPriority [
+	^ priority
+]
