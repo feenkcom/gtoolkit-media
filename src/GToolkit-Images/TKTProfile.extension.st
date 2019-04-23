@@ -6,10 +6,10 @@ TKTProfile class >> gtDevelopment [
 	^ TKTProfile
 		on:
 			{(#debugging -> true).
-			(#runner -> GtImageQueueWorkerPool createDefault).
+			(#runner -> BlImageQueueWorkerPool createDefault).
 			(#poolWorkerProcess -> TKTDebuggWorkerProcess).
 			(#process -> TKTRawProcess).
 			(#errorHandler -> TKTDebuggerExceptionHandler).
-			(#processProvider -> GtTKTBackgroundProcessProvider new).
+			(#processProvider -> BlTKTBackgroundProcessProvider new).
 			(#serviceManager -> TKTServiceManager new)} asDictionary
 ]

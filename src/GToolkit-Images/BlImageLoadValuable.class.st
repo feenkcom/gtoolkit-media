@@ -93,20 +93,20 @@ BlImageLoadValuable >> getForm [
 
 	| newForm |
 
+	element needsNewForm ifFalse: [ ^nil ].
+
 	newForm := self getNewForm.
 	newForm extent = self extent ifFalse:
-		[ newForm := newForm scaledIntoFormOfSize: self extent ].
+		[ newForm := newForm scaledToSize: self extent ].
 	^newForm
 ]
 
 { #category : #private }
 BlImageLoadValuable >> getNewForm [
-	"Retrieve the image from the file and scale if necessary"
+	"Retrieve the image from the file"
 
-	| newForm |
+	^ImageReadWriter gtFormFromBuffer: self getBuffer.
 
-	newForm := ImageReadWriter gtFormFromBuffer: self getBuffer.
-	^newForm
 ]
 
 { #category : #initialization }
@@ -119,12 +119,18 @@ BlImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
 
 { #category : #acccessing }
 BlImageLoadValuable >> taskPriority [
+	"Answer the task priority of the receiver.
+	If the element is visible, answer 0 (highest priority), otherwise answer the distance from the center of the display"
 
 	| rootBounds elementBounds |
 
 	element isAttachedToSceneGraph ifFalse: 
 		"The element is probably being inspected, assume that's what the user wants to see"
 		[ ^0 ].
+
+	"Determine the of the element and its space (in the parent's coordinate system).
+	It may be that the element only takes up part of the space, so this is an approximation.
+	ToDo: Be able to set the parent element which should be used to calculate the distance"
 	rootBounds := element space root bounds asRectangle.
 	elementBounds := element boundsInSpace.
 
@@ -148,8 +154,8 @@ BlImageLoadValuable >> value [
 		signal emit.
 		^nil ]."
 
-	^form ifNil: [ 
-		"(Delay forSeconds: 1) wait."
-		element background: self form.
+	^form ifNil: [
+		"1.5 seconds wait."
+		self form ifNotNil: [ element form: form ].
 		form ]
 ]

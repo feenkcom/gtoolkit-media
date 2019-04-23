@@ -1,11 +1,11 @@
 Class {
-	#name : #GtTKTBackgroundProcessProvider,
+	#name : #BlTKTBackgroundProcessProvider,
 	#superclass : #TKTTaskItProcessProvider,
 	#category : #'GToolkit-Images-TaskIt'
 }
 
 { #category : #'instance-creation' }
-GtTKTBackgroundProcessProvider >> createProcessDoing: aValuable named: aName [
+BlTKTBackgroundProcessProvider >> createProcessDoing: aValuable named: aName [
 	^ (TKTProcess send: #value to: aValuable)
 		annotate: #task with: aValuable;
 		name: aName;

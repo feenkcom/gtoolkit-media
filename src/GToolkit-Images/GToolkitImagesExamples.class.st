@@ -51,7 +51,7 @@ GToolkitImagesExamples >> gridSpaceForDirectory: aFileReference [
 ]
 
 { #category : #examples }
-GToolkitImagesExamples >> gtBlUrlImage [
+GToolkitImagesExamples >> gtBlUrlImageElement [
 	<gtExample>
 
 	| file element |
@@ -59,4 +59,35 @@ GToolkitImagesExamples >> gtBlUrlImage [
 	file := GtIcebergUtility documentAtPath: 'feenkcom/gtoolkit-inspector/doc/gt.png' asFileReference path.
 	element := BlUrlImage file: file.
 	^element
+]
+
+{ #category : #examples }
+GToolkitImagesExamples >> gtBlUrlImageSpace [
+	<gtExample>
+
+	| space |
+
+	space := BlSpace new.
+	space root addChild: self gtBlUrlImageElement.
+	space title: 'GT Logo' translated.
+	space show.
+	^space
+]
+
+{ #category : #'as yet unclassified' }
+GToolkitImagesExamples >> imageInSpace: aFileReference [
+
+	| element space |
+
+	element := BlUrlImage new.
+	element file: aFileReference asFileReference.
+	element constraintsDo: [ :c | 
+		c horizontal matchParent.
+		c vertical matchParent ].
+
+	space := BlSpace new.
+	space root addChild: element.
+	space title: aFileReference asFileReference basename.
+	space show.
+	^space
 ]

@@ -7,7 +7,7 @@ The public API and key messages are the same as for TKTCommonWorkerPool.
 
 "
 Class {
-	#name : #GtImageQueueWorkerPool,
+	#name : #BlImageQueueWorkerPool,
 	#superclass : #TKTCommonQueueWorkerPool,
 	#classVars : [
 		'Current'
@@ -16,7 +16,7 @@ Class {
 }
 
 { #category : #accessing }
-GtImageQueueWorkerPool class >> current [
+BlImageQueueWorkerPool class >> current [
 
 	^Current ifNil: [ 
 		Current := self new
@@ -26,7 +26,7 @@ GtImageQueueWorkerPool class >> current [
 ]
 
 { #category : #acccessing }
-GtImageQueueWorkerPool class >> stopCurrent [
+BlImageQueueWorkerPool class >> stopCurrent [
 	<script>
 	"Stop the default worker pool and remove the reference to it"
 
@@ -36,7 +36,7 @@ GtImageQueueWorkerPool class >> stopCurrent [
 ]
 
 { #category : #initialization }
-GtImageQueueWorkerPool >> initialize [ 
+BlImageQueueWorkerPool >> initialize [ 
 
 	super initialize.
 	taskQueue := AtomicSharedPriorityQueue new.
@@ -44,7 +44,7 @@ GtImageQueueWorkerPool >> initialize [
 ]
 
 { #category : #printing }
-GtImageQueueWorkerPool >> printOn: aStream [
+BlImageQueueWorkerPool >> printOn: aStream [
 	| freeWorkers | 
 	freeWorkers := workers select: #isFree.
 	aStream

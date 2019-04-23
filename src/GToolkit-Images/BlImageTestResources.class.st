@@ -1,5 +1,5 @@
 Class {
-	#name : #GtImageTestResources,
+	#name : #BlImageTestResources,
 	#superclass : #TestResource,
 	#instVars : [
 		'testDirectory',
@@ -12,27 +12,27 @@ Class {
 }
 
 { #category : #accessing }
-GtImageTestResources >> f1 [
+BlImageTestResources >> f1 [
 	^ f1
 ]
 
 { #category : #accessing }
-GtImageTestResources >> f2 [
+BlImageTestResources >> f2 [
 	^ f2
 ]
 
 { #category : #accessing }
-GtImageTestResources >> f3 [
+BlImageTestResources >> f3 [
 	^ f3
 ]
 
 { #category : #accessing }
-GtImageTestResources >> forms [
+BlImageTestResources >> forms [
 	^ forms
 ]
 
 { #category : #running }
-GtImageTestResources >> setUp [ 
+BlImageTestResources >> setUp [ 
 
 	| images |
 	super setUp.
@@ -61,7 +61,7 @@ GtImageTestResources >> setUp [
 ]
 
 { #category : #running }
-GtImageTestResources >> tearDown [ 
+BlImageTestResources >> tearDown [ 
 
 	testDirectory ensureDeleteAll.
 	super tearDown.
@@ -69,7 +69,7 @@ GtImageTestResources >> tearDown [
 ]
 
 { #category : #running }
-GtImageTestResources >> tempFile [
+BlImageTestResources >> tempFile [
 
 	| images tempFile |
 
@@ -82,6 +82,6 @@ GtImageTestResources >> tempFile [
 ]
 
 { #category : #accessing }
-GtImageTestResources >> testDirectory [
+BlImageTestResources >> testDirectory [
 	^ testDirectory
 ]
