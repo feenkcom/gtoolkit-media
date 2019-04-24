@@ -7,7 +7,7 @@ The public API and key messages are the same as for TKTCommonWorkerPool.
 
 "
 Class {
-	#name : #BlImageQueueWorkerPool,
+	#name : #BlAsyncUIWorkerPool,
 	#superclass : #TKTCommonQueueWorkerPool,
 	#classVars : [
 		'Current'
@@ -16,7 +16,7 @@ Class {
 }
 
 { #category : #accessing }
-BlImageQueueWorkerPool class >> current [
+BlAsyncUIWorkerPool class >> current [
 
 	^Current ifNil: [ 
 		Current := self new
@@ -25,8 +25,17 @@ BlImageQueueWorkerPool class >> current [
 			yourself ]
 ]
 
+{ #category : #scheduling }
+BlAsyncUIWorkerPool class >> schedule: aValuable [
+	"Schedule the supplied valuable in the current worker pool"
+
+	TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
+		self current schedule: aValuable ].
+
+]
+
 { #category : #acccessing }
-BlImageQueueWorkerPool class >> stopCurrent [
+BlAsyncUIWorkerPool class >> stopCurrent [
 	<script>
 	"Stop the default worker pool and remove the reference to it"
 
@@ -36,7 +45,7 @@ BlImageQueueWorkerPool class >> stopCurrent [
 ]
 
 { #category : #initialization }
-BlImageQueueWorkerPool >> initialize [ 
+BlAsyncUIWorkerPool >> initialize [ 
 
 	super initialize.
 	taskQueue := AtomicSharedPriorityQueue new.
@@ -44,7 +53,7 @@ BlImageQueueWorkerPool >> initialize [
 ]
 
 { #category : #printing }
-BlImageQueueWorkerPool >> printOn: aStream [
+BlAsyncUIWorkerPool >> printOn: aStream [
 	| freeWorkers | 
 	freeWorkers := workers select: #isFree.
 	aStream

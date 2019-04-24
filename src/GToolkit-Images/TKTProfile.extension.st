@@ -6,7 +6,7 @@ TKTProfile class >> gtDevelopment [
 	^ TKTProfile
 		on:
 			{(#debugging -> true).
-			(#runner -> BlImageQueueWorkerPool createDefault).
+			(#runner -> BlAsyncUIWorkerPool createDefault).
 			(#poolWorkerProcess -> TKTDebuggWorkerProcess).
 			(#process -> TKTRawProcess).
 			(#errorHandler -> TKTDebuggerExceptionHandler).

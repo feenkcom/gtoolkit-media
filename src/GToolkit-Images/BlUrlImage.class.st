@@ -31,13 +31,12 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #BlUrlImage,
-	#superclass : #BlElement,
+	#superclass : #BlAsyncElement,
 	#instVars : [
 		'url',
 		'file',
 		'form',
-		'bitmap',
-		'priority'
+		'bitmap'
 	],
 	#category : #'GToolkit-Images-Model'
 }
@@ -46,14 +45,6 @@ Class {
 BlUrlImage class >> file: aFileReference [
 
 	^self new file: aFileReference
-]
-
-{ #category : #layout }
-BlUrlImage >> applyLayoutIn: aBlBounds [
-
-	
-	super applyLayoutIn: aBlBounds.
-	self queueImageLoad
 ]
 
 { #category : #initialization }
@@ -102,7 +93,7 @@ BlUrlImage >> file: aFileReference [
 	"Load the supplied file in the background processor (which will update the receiver when done"
 
 	file := aFileReference asFileReference.
-	self queueImageLoad
+	self queueAsyncUpdate
 ]
 
 { #category : #accessing }
@@ -119,7 +110,7 @@ BlUrlImage >> form: anObject [
 ]
 
 { #category : #accessing }
-BlUrlImage >> needsNewForm [
+BlUrlImage >> needsUpdate [
 	"Answer a boolean indicating whether the current form is too small or too large"
 
 	| currentExtent formSize currentSize |
@@ -135,31 +126,10 @@ BlUrlImage >> needsNewForm [
 
 ]
 
-{ #category : #'hooks - children' }
-BlUrlImage >> onAddedToSceneGraph [
-
-	super onAddedToSceneGraph.
-	self queueImageLoad.
-]
-
 { #category : #accessing }
-BlUrlImage >> priority [
-	^ priority
-]
+BlUrlImage >> queueEntry [
+	"Answer a TaskIt valuable that will update the receiver."
 
-{ #category : #accessing }
-BlUrlImage >> priority: anObject [
-	priority := anObject
-]
-
-{ #category : #accessing }
-BlUrlImage >> queueImageLoad [
-	"Queue the receivers file to be loaded and the receiver updated."
-
-	self needsNewForm ifFalse: [ ^self ].
-
-	TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
-		BlImageQueueWorkerPool current schedule:
-			(BlImageLoadValuable file: file element: self) ].
+	^BlImageLoadValuable file: file element: self
 
 ]

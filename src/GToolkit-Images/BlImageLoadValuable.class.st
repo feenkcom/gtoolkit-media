@@ -27,11 +27,10 @@ Future performance plans:
 "
 Class {
 	#name : #BlImageLoadValuable,
-	#superclass : #Object,
+	#superclass : #BlAsyncElementValuable,
 	#instVars : [
 		'file',
-		'form',
-		'element'
+		'form'
 	],
 	#category : #'GToolkit-Images-Model'
 }
@@ -40,12 +39,6 @@ Class {
 BlImageLoadValuable class >> file: aFileReference element: aBlElement [
 
 	^self new initializeFile: aFileReference element: aBlElement
-]
-
-{ #category : #converting }
-BlImageLoadValuable >> asTask [ 
-
-	^TKTTask valuable: self
 ]
 
 { #category : #acccessing }
@@ -93,7 +86,7 @@ BlImageLoadValuable >> getForm [
 
 	| newForm |
 
-	element needsNewForm ifFalse: [ ^nil ].
+	element needsUpdate ifFalse: [ ^nil ].
 
 	newForm := self getNewForm.
 	newForm extent = self extent ifFalse:
@@ -117,35 +110,9 @@ BlImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
 	element := aBlElement
 ]
 
-{ #category : #acccessing }
-BlImageLoadValuable >> taskPriority [
-	"Answer the task priority of the receiver.
-	If the element is visible, answer 0 (highest priority), otherwise answer the distance from the center of the display"
-
-	| rootBounds elementBounds |
-
-	element isAttachedToSceneGraph ifFalse: 
-		"The element is probably being inspected, assume that's what the user wants to see"
-		[ ^0 ].
-
-	"If a priority has been specified, use that"
-	element priority ifNotNil: [ ^element priority ].
-
-	"Determine the of the element and its space (in the parent's coordinate system).
-	It may be that the element only takes up part of the space, so this is an approximation.
-	ToDo: Be able to set the parent element which should be used to calculate the distance"
-	rootBounds := element space root bounds asRectangle.
-	elementBounds := element boundsInSpace.
-
-	"If the element is visible, load at high priority"
-	(rootBounds containsRect: elementBounds) ifTrue: [ ^1 ].
-	"Otherwise, priority is proportional to distance from viewable area"
-	^rootBounds center distanceTo: elementBounds center
-]
-
 { #category : #evaluating }
-BlImageLoadValuable >> value [
-	"Evaluate the receiver and answer the BlElement"
+BlImageLoadValuable >> updateElement [
+	"Evaluate the receiver and update its element"
 
 	^form ifNil: [
 		"1.5 seconds wait."
