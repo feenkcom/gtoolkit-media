@@ -74,7 +74,7 @@ GToolkitImagesExamples >> gtBlUrlImageSpace [
 	^space
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #examples }
 GToolkitImagesExamples >> imageInSpace: aFileReference [
 
 	| element space |
