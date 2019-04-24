@@ -144,16 +144,6 @@ BlImageLoadValuable >> taskPriority [
 BlImageLoadValuable >> value [
 	"Evaluate the receiver and answer the BlElement"
 
-	"If the element's window has been closed, log and do nothing"
-	"At the moment, an element doesn't have a space when it is inspected,
-	wait until we have a better test"
-	"(element space isNil or: [ element space hasHostSpace not ]) ifTrue: [ | signal |
-		signal := StringSignal new.
-		signal message: 'BlImageLoadValuable value aborted'.
-		signal properties at: #fileName put: element file.
-		signal emit.
-		^nil ]."
-
 	^form ifNil: [
 		"1.5 seconds wait."
 		self form ifNotNil: [ element form: form ].
