@@ -24,6 +24,8 @@ GToolkitImagesExamples >> gridElementForDirectory: aFileReference [
 				size: previewSize;
 				file: file;
 				yourself ].
+	children size >= 5 ifTrue:
+		[ (children at: 5) priority: 0 ].
 
 	gridElement addChildren: children.
 	scrollPane := BlScrollableElement new.

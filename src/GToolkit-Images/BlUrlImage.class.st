@@ -1,8 +1,11 @@
 "
 BlUrlImage is a Bloc element for displaying images:
 
-- Images are loaded and resized on a low priority queue so that UI responsiveness is maintained.
-- Images are loaded in priority based on whether they are visible or near the visible area.
+- Images are loaded and resized on a low (Process) priority queue so that UI responsiveness is maintained.
+- Images are loaded in priority based on: 
+-- A manually specified priority 
+-- Whether they are visible or,
+-- How far they are from the visible area.
 
 Public API and Key Messages
 
@@ -16,9 +19,10 @@ Internal Representation and Key Implementation Points.
 
     Instance Variables
 	bitmap:		<Object>
-	file:		<Object>
-	form:		<Object>
-	url:		<Object>
+	file:		<FileReference>
+	form:		<Form>
+	url:		<String>
+	priority: <Integer>  The queue priority to use. nil for default.  0 is highest priority.
 
 
     Implementation Points
@@ -32,7 +36,8 @@ Class {
 		'url',
 		'file',
 		'form',
-		'bitmap'
+		'bitmap',
+		'priority'
 	],
 	#category : #'GToolkit-Images-Model'
 }
@@ -135,6 +140,16 @@ BlUrlImage >> onAddedToSceneGraph [
 
 	super onAddedToSceneGraph.
 	self queueImageLoad.
+]
+
+{ #category : #accessing }
+BlUrlImage >> priority [
+	^ priority
+]
+
+{ #category : #accessing }
+BlUrlImage >> priority: anObject [
+	priority := anObject
 ]
 
 { #category : #accessing }
