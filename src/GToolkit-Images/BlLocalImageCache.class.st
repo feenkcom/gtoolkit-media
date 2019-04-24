@@ -1,3 +1,42 @@
+"
+BlLocalImageCache provides a cache of file system and network images at specified sizes.
+
+- Cache entries are created lazily, i.e. only when a cache entry of the specified size is requested.
+- If the original image size is smaller than the cache size, the original will be returned.
+
+
+Public API and Key Messages
+
+- message one   
+- message two 
+- (for bonus points) how to create instances.
+
+   One simple example is simply gorgeous.
+ 
+Internal Representation and Key Implementation Points.
+
+    Instance Variables
+	cacheRoot:		<Object>
+	fileRoot:		<Object>
+	imageSizes:		<Object>
+	maxCacheSize:		<Object>
+	networkRoot:		<Object>
+
+
+!!!Implementation Points
+
+To allow lookup in the file system cache to be quick either an index has to be held in memory or the cache entries found quickly.
+
+The current assumption is that the memory cost of an in-memory index is too high.
+
+Scanning a directory looking for files is slow - Pharo always walks over all the files in the directory and matches the file name.  Determining whether a given file exists is fast, a single plugin primitive call.
+
+So we want the cache structure to allow lookup to be determined on the basis of a known file / directory existing or not.  The chosen structure is:
+
+	fileRoot / <path to image> / <image file name> / <cache entry name>.jpg
+
+The directory containing the cache entries can then easily be tested for existence.
+"
 Class {
 	#name : #BlLocalImageCache,
 	#superclass : #BlImageCache,
@@ -20,6 +59,15 @@ BlLocalImageCache >> cacheRoot: aFileReference [
 	fileRoot ensureCreateDirectory.
 	networkRoot := cacheRoot / 'network'.
 	networkRoot ensureCreateDirectory.
+]
+
+{ #category : #private }
+BlLocalImageCache >> cacheSizeFor: minImageSize [
+	"Answer the cached image size just larger than minImageSize"
+
+	^imageSizes detect: [ :size | minImageSize <= size ]
+							ifNone: [ nil ].
+	
 ]
 
 { #category : #private }
@@ -48,6 +96,10 @@ BlLocalImageCache >> fileAt: aFileReference size: minImageSize [
 	| cacheSize |
 
 	minImageSize ifNil: [ ^self formFor: aFileReference ].
+	cacheSize := self cacheSizeFor: minImageSize.
+	cacheSize ifNil: [ ^self formFor: aFileReference ].
+	"WIP: Find or create the cache entry"
+	self shouldBeImplemented.
 ]
 
 { #category : #private }
@@ -76,16 +128,30 @@ BlLocalImageCache >> getBufferFor: aFileReference [
 	^buffer
 ]
 
-{ #category : #initialization }
-BlLocalImageCache >> initialize [ 
+{ #category : #accessing }
+BlLocalImageCache >> imageSizes: anArray [
+	"Answer the image sizes to cache.
+	The longer dimension of the image will be the size specified."
 
-	self cacheRoot: (FileLocator temp / 'gtoolkit' / 'cache' / 'images') resolve.
+	imageSizes := anArray sorted.
+]
+
+{ #category : #initialization }
+BlLocalImageCache >> initialize [
+
 	self maxCacheSize: 500000000. "500MB"
-	"self setDefaultImageSizes."
+	self imageSizes: self defaultImageSizes.
 ]
 
 { #category : #configuration }
 BlLocalImageCache >> maxCacheSize: anInteger [
 
 	maxCacheSize := anInteger
+]
+
+{ #category : #initialization }
+BlLocalImageCache >> setDefaultLocation [
+
+	self cacheRoot: (FileLocator temp / 'gtoolkit' / 'cache' / 'images') resolve.
+
 ]
