@@ -33,7 +33,6 @@ Class {
 	#name : #BlUrlImage,
 	#superclass : #BlAsyncElement,
 	#instVars : [
-		'url',
 		'file',
 		'form',
 		'bitmap'
