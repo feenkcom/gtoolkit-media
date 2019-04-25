@@ -13,7 +13,7 @@ By default, an update is scheduled:
 - When the receiver is added to a scene graph.
 - When the receiver's layout is changed.
 
-Subclasses can schedule updates by sending #queueAsyncUpdate to themselves.
+Subclasses can schedule additional updates by sending #queueAsyncUpdate to themselves.
 
 Because adding tasks and their execution order is indeterminate, no attempt is made to remove duplicates, rather the task should confirm that an update is required by calling #needsUpdate.
 
@@ -22,7 +22,10 @@ Subclasses are responsible for implementing #drawOnSpartaCanvas:.
 There are two ""priorities"" involved with BlAsyncElement:
 
 - All background processing is done by BlAsyncUIWorkerPool at the Process priority specified in BlTKTBackgroundProcessProvider>>createProcessDoing:named:.
-- Items are retrieved from the task queue in priority order.  Priority 0 is the highest priority, with positive numbers being progressively lower priority.
+- Items are retrieved from the task queue in priority order.  Priority 0 is the highest priority, with positive numbers being progressively lower priority.  Normally priorities are calculated dynamically, with elements that are currently visible receiving the highest priority, and then lower priority the further away from the visible area they are.
+
+By default the dynamic priority will be based on whether the receiver is within the space's bounds.  However it is possible (or likely) that the receiver will be a child of another element that only occupies a small portion of the space.  Specifying the parent which has the actual visible area improves the priority order.
+
 
 Public API and Key Messages
 
@@ -35,8 +38,8 @@ Public API and Key Messages
 Internal Representation and Key Implementation Points.
 
     Instance Variables
-	priority:		<Integer>  The priority at relative to other BlAsyncElements. 0 is highest priority.
-
+	priority:		<Integer>  An optional manually set priority at relative to other BlAsyncElements. 0 is highest priority.
+	visibleElement: <BlElement> The dynamic priority will be based on whether the receiver is visible within the visibleElement.
 
     Implementation Points
 "
@@ -44,7 +47,8 @@ Class {
 	#name : #BlAsyncElement,
 	#superclass : #BlElement,
 	#instVars : [
-		'priority'
+		'priority',
+		'visibleElement'
 	],
 	#category : #'GToolkit-Images-Model'
 }
@@ -99,4 +103,20 @@ BlAsyncElement >> queueEntry [
 	"Answer a valuable that will update the receiver when processed"
 
 	^self subclassResponsibility
+]
+
+{ #category : #accessing }
+BlAsyncElement >> visibleElement [
+	"Answer the element which will be used to calculate the receivers evaluation priority.
+	Default = the space's root element"
+
+	^ visibleElement ifNil: [ self space root ]
+]
+
+{ #category : #accessing }
+BlAsyncElement >> visibleElement: aBlElement [
+	"Answer the element which will be used to calculate the receivers evaluation priority.
+	Default (nil) = the space's root element"
+
+	visibleElement := aBlElement
 ]

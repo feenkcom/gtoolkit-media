@@ -50,7 +50,7 @@ BlAsyncElementValuable >> taskPriority [
 	"Determine the of the element and its space (in the parent's coordinate system).
 	It may be that the element only takes up part of the space, so this is an approximation.
 	ToDo: Be able to set the parent element which should be used to calculate the distance"
-	rootBounds := element space root bounds asRectangle.
+	rootBounds := element visibleElement boundsInSpace.
 	elementBounds := element boundsInSpace.
 
 	"If the element is visible, load at high priority"
