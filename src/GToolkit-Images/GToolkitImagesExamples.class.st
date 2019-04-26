@@ -20,7 +20,7 @@ GToolkitImagesExamples >> gridElementForDirectory: aFileReference [
 		select: [ :each | each extension asLowercase = 'jpg' ].
 	previewSize := 200@200.
 	children :=  jpgs collect: [ :file |
-			BlUrlImage new 
+			BlFileImageElement new 
 				size: previewSize;
 				file: file;
 				yourself ].
@@ -59,7 +59,7 @@ GToolkitImagesExamples >> gtBlUrlImageElement [
 	| file element |
 
 	file := GtIcebergUtility documentAtPath: 'feenkcom/gtoolkit-inspector/doc/gt.png' asFileReference path.
-	element := BlUrlImage file: file.
+	element := BlFileImageElement file: file.
 	^element
 ]
 
@@ -81,7 +81,7 @@ GToolkitImagesExamples >> imageInSpace: aFileReference [
 
 	| element space |
 
-	element := BlUrlImage new.
+	element := BlFileImageElement new.
 	element file: aFileReference asFileReference.
 	element constraintsDo: [ :c | 
 		c horizontal matchParent.

@@ -24,7 +24,7 @@ Class {
 	#instVars : [
 		'element'
 	],
-	#category : #'GToolkit-Images-Model'
+	#category : #'GToolkit-Images-TaskIt'
 }
 
 { #category : #converting }

@@ -16,7 +16,7 @@ BlImageLoadValuableTest >> testValue [
 	| valuable resources element form |
 
 	resources := BlImageTestResources current.
-	element := BlUrlImage new size: 200@200.
+	element := BlFileImageElement new size: 200@200.
 	valuable := BlImageLoadValuable file: resources f1 element: element.
 	form := valuable getNewForm.
 	self assert: form class equals: Form.

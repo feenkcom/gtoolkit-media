@@ -32,7 +32,7 @@ Class {
 		'file',
 		'form'
 	],
-	#category : #'GToolkit-Images-Model'
+	#category : #'GToolkit-Images-TaskIt'
 }
 
 { #category : #'instance creation' }

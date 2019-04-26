@@ -50,7 +50,7 @@ Class {
 		'priority',
 		'visibleElement'
 	],
-	#category : #'GToolkit-Images-Model'
+	#category : #'GToolkit-Images-Elements'
 }
 
 { #category : #layout }
