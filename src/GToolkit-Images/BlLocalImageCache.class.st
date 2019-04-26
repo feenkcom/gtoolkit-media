@@ -50,6 +50,19 @@ Class {
 	#category : #'GToolkit-Images-Cache'
 }
 
+{ #category : #private }
+BlLocalImageCache >> cacheFileFor: aFileReference size: cacheSize [
+	"Answer the file name used to cache aFileReference at cacheSize"
+
+	| cacheFile |
+
+	cacheFile := fileRoot.
+	aFileReference path segments do: 
+		[ :each | cacheFile := cacheFile / each ].
+	cacheFile := cacheFile / (cacheSize printString, '.jpg').
+	^cacheFile
+]
+
 { #category : #configuration }
 BlLocalImageCache >> cacheRoot: aFileReference [
 
@@ -93,13 +106,26 @@ BlLocalImageCache >> fileAt: aFileReference size: minImageSize [
 	If minImageSize isNil, answer the form from the original file.
 	Otherwise answer the cached image which is larger than minImageSize."
 
-	| cacheSize |
+	| fileReference cacheSize cacheFile form |
 
-	minImageSize ifNil: [ ^self formFor: aFileReference ].
+	fileReference := aFileReference asFileReference.
+	minImageSize ifNil: [ ^self formFor: fileReference ].
 	cacheSize := self cacheSizeFor: minImageSize.
-	cacheSize ifNil: [ ^self formFor: aFileReference ].
-	"WIP: Find or create the cache entry"
-	self shouldBeImplemented.
+	cacheSize ifNil: [ ^self formFor: fileReference ].
+	cacheFile := self cacheFileFor: fileReference size: cacheSize.
+	cacheFile exists ifTrue: [ ^self formFor: cacheFile ].
+	form := self formFor: fileReference.
+	form := form scaledToSize: cacheSize@cacheSize.
+	PluginBasedJPEGReadWriter putForm: form onFileNamed: cacheFile.
+	^form.
+
+]
+
+{ #category : #private }
+BlLocalImageCache >> fileRoot [
+	"This is only here to facilitate testing"
+
+	^fileRoot
 ]
 
 { #category : #private }
@@ -128,9 +154,9 @@ BlLocalImageCache >> getBufferFor: aFileReference [
 	^buffer
 ]
 
-{ #category : #accessing }
+{ #category : #configuration }
 BlLocalImageCache >> imageSizes: anArray [
-	"Answer the image sizes to cache.
+	"Set the image sizes to cache.
 	The longer dimension of the image will be the size specified."
 
 	imageSizes := anArray sorted.
