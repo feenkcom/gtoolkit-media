@@ -30,7 +30,7 @@ Internal Representation and Key Implementation Points.
 - The are multiple tradeoffs between memory consumption, memory management (impact on the memory management system, particularly garbage collection) and CPU usage.   Currently the decision when to reload the Form is hard coded in ${method:name=BlUrlImage>>#needsNewForm}$.
 "
 Class {
-	#name : #BlUrlImage,
+	#name : #BlFileImageElement,
 	#superclass : #BlAsyncElement,
 	#instVars : [
 		'url',
@@ -38,23 +38,23 @@ Class {
 		'form',
 		'bitmap'
 	],
-	#category : #'GToolkit-Images-Model'
+	#category : #'GToolkit-Images-Elements'
 }
 
 { #category : #accessing }
-BlUrlImage class >> file: aFileReference [
+BlFileImageElement class >> file: aFileReference [
 
 	^self new file: aFileReference
 ]
 
 { #category : #initialization }
-BlUrlImage >> clearForm [
+BlFileImageElement >> clearForm [
 
 	form := bitmap := nil.
 ]
 
 { #category : #drawing }
-BlUrlImage >> drawOnSpartaCanvas: aCanvas [
+BlFileImageElement >> drawOnSpartaCanvas: aCanvas [
 
 	| ratio imageExtent translation |
 
@@ -83,13 +83,13 @@ BlUrlImage >> drawOnSpartaCanvas: aCanvas [
 ]
 
 { #category : #accessing }
-BlUrlImage >> file [ 
+BlFileImageElement >> file [ 
 
 	^file
 ]
 
 { #category : #accessing }
-BlUrlImage >> file: aFileReference [
+BlFileImageElement >> file: aFileReference [
 	"Load the supplied file in the background processor (which will update the receiver when done"
 
 	file := aFileReference asFileReference.
@@ -97,12 +97,12 @@ BlUrlImage >> file: aFileReference [
 ]
 
 { #category : #accessing }
-BlUrlImage >> form [
+BlFileImageElement >> form [
 	^ form
 ]
 
 { #category : #accessing }
-BlUrlImage >> form: anObject [
+BlFileImageElement >> form: anObject [
 
 	form := anObject.
 	bitmap := nil.
@@ -110,7 +110,7 @@ BlUrlImage >> form: anObject [
 ]
 
 { #category : #accessing }
-BlUrlImage >> needsUpdate [
+BlFileImageElement >> needsUpdate [
 	"Answer a boolean indicating whether the current form is too small or too large"
 
 	| currentExtent formSize currentSize |
@@ -127,7 +127,7 @@ BlUrlImage >> needsUpdate [
 ]
 
 { #category : #accessing }
-BlUrlImage >> queueEntry [
+BlFileImageElement >> queueEntry [
 	"Answer a TaskIt valuable that will update the receiver."
 
 	^BlImageLoadValuable file: file element: self
