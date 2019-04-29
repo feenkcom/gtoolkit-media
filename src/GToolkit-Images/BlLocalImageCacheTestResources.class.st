@@ -2,6 +2,7 @@ Class {
 	#name : #BlLocalImageCacheTestResources,
 	#superclass : #TestResource,
 	#instVars : [
+		'resourceRoot',
 		'cacheRoot',
 		'fileRoot',
 		'cache'
@@ -19,22 +20,41 @@ BlLocalImageCacheTestResources >> cacheRoot [
 	^ cacheRoot
 ]
 
+{ #category : #accessing }
+BlLocalImageCacheTestResources >> fileRoot [
+	^ fileRoot
+]
+
+{ #category : #accessing }
+BlLocalImageCacheTestResources >> image1200 [
+
+	^fileRoot / 'image1200.jpg'
+]
+
 { #category : #running }
 BlLocalImageCacheTestResources >> setUp [ 
 
-	| root |
+	| form |
 
 	super setUp.
-	cacheRoot := FileReference newTempFilePrefix: 'Gtoolkit-Images-' suffix: '-tests'.
+	resourceRoot := FileReference newTempFilePrefix: 'Gtoolkit-Images-' suffix: '-tests'.
+	resourceRoot ensureCreateDirectory.
+	cacheRoot := resourceRoot / 'cache'.
+	cacheRoot ensureCreateDirectory.
+	fileRoot := resourceRoot / 'files'.
+	fileRoot ensureCreateDirectory.
 	cache := BlLocalImageCache new.
 	cache imageSizes: #(200 400 800).
 	cache cacheRoot: cacheRoot.
+
+	form := self testForm scaledToSize: 1200@900.
+	PluginBasedJPEGReadWriter putForm: form onFileNamed: self image1200.
 ]
 
 { #category : #running }
 BlLocalImageCacheTestResources >> tearDown [ 
 
-	cacheRoot ensureDeleteAll.
+	resourceRoot ensureDeleteAll.
 	super tearDown
 ]
 
@@ -52,20 +72,4 @@ BlLocalImageCacheTestResources >> testForm [
 		font: (LogicalFont familyName: 'Bitmap DejaVu Sans' pointSize: 100)
 		color: Color black.
 	^form
-]
-
-{ #category : #accessing }
-BlLocalImageCacheTestResources >> testForm2000 [
-	"Create a form 2000x1500 that can be used to test the cache"
-
-	| form canvas |
-
-	form := Form extent: 400@300.
-	canvas := FormCanvas on: form.
-	canvas
-		drawString: Date today printString, ' ', Time now print24
-		at: 10@150
-		font: (LogicalFont familyName: 'Bitmap DejaVu Sans' pointSize: 100)
-		color: Color black.
-	^form scaledToSize: 2000@1500
 ]

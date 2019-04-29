@@ -116,6 +116,7 @@ BlLocalImageCache >> fileAt: aFileReference size: minImageSize [
 	cacheFile exists ifTrue: [ ^self formFor: cacheFile ].
 	form := self formFor: fileReference.
 	form := form scaledToSize: cacheSize@cacheSize.
+	cacheFile parent ensureCreateDirectory.
 	PluginBasedJPEGReadWriter putForm: form onFileNamed: cacheFile.
 	^form.
 
@@ -126,6 +127,14 @@ BlLocalImageCache >> fileRoot [
 	"This is only here to facilitate testing"
 
 	^fileRoot
+]
+
+{ #category : #manage }
+BlLocalImageCache >> flush [ 
+	"Remove all cached data from the receiver"
+
+	fileRoot ensureDeleteAllChildren.
+	networkRoot ensureDeleteAllChildren.
 ]
 
 { #category : #private }

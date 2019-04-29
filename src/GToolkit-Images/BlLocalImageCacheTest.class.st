@@ -13,7 +13,13 @@ BlLocalImageCacheTest class >> resources [
 { #category : #accessing }
 BlLocalImageCacheTest >> cache [ 
 
-	^self class resources first current cache
+	^self resource cache
+]
+
+{ #category : #accessing }
+BlLocalImageCacheTest >> resource [
+
+	^self class resources first current
 ]
 
 { #category : #tests }
@@ -48,15 +54,71 @@ BlLocalImageCacheTest >> testCacheSizeFor [
 ]
 
 { #category : #tests }
-BlLocalImageCacheTest >> testCachedSizeNil [
+BlLocalImageCacheTest >> testCachedSize100 [
 
-	| cache form |
+	| cache cachedForm maxDimension |
 
 	cache := self cache.
-	form := self resource testForm scaledToSize: 2000@1500.
-
+	cachedForm := cache fileAt: self resource image1200 size: 100.
+	maxDimension := cachedForm width max: cachedForm height.
+	"The next largest size is 200"
 	self 
-		assert: (cache )
+		assert: maxDimension 
+		equals: 200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize200 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 200.
+	maxDimension := cachedForm width max: cachedForm height.
+	"The next largest size is 200"
+	self 
+		assert: maxDimension 
+		equals: 200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize2000 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 2000.
+	maxDimension := cachedForm width max: cachedForm height.
+	"This is larger than the original, we should get back the original"
+	self 
+		assert: maxDimension 
+		equals: 1200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize700 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 700.
+	maxDimension := cachedForm width max: cachedForm height.
+	"The next largest size is 800"
+	self 
+		assert: maxDimension 
+		equals: 800
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSizeNil [
+
+	| cache |
+
+	cache := self cache.
+	"Comparing the form contents is heavy work, just check the size for now"
+	self 
+		assert: (cache fileAt: self resource image1200 size: nil) bitsSize
+		equals: (ImageReadWriter gtFormFromFileReference: self resource image1200) bitsSize
 ]
 
 { #category : #tests }
@@ -67,4 +129,26 @@ BlLocalImageCacheTest >> testDeafultImageSizes [
 	defaultSizes := BlLocalImageCache new defaultImageSizes.
 	self assert: defaultSizes size equals: 3.
 	self assert: defaultSizes first equals: 200.
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testFlush [
+
+	| cache |
+
+	cache := self cache.
+	cache fileAt: self resource image1200 size: 100.
+	cache fileAt: self resource image1200 size: 300.
+	cache fileAt: self resource image1200 size: 700.
+
+	self 
+		assert: (self resource cacheRoot allChildren select: [ :each | each basename endsWith: 'jpg' ]) size
+		equals: 4.
+
+	cache flush.
+
+	self 
+		assert: (self resource cacheRoot allChildren select: [ :each | each basename endsWith: 'jpg' ]) size
+		equals: 0
+
 ]
