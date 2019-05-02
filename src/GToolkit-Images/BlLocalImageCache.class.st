@@ -45,10 +45,53 @@ Class {
 		'fileRoot',
 		'networkRoot',
 		'maxCacheSize',
-		'imageSizes'
+		'imageSizes',
+		'taskitRunner',
+		'housekeeper',
+		'hits',
+		'misses'
+	],
+	#classVars : [
+		'Current'
 	],
 	#category : #'GToolkit-Images-Cache'
 }
+
+{ #category : #accessing }
+BlLocalImageCache class >> current [ 
+
+	^Current ifNil: [ 	Current := self new setDefaultLocation  ]
+]
+
+{ #category : #managing }
+BlLocalImageCache class >> stopCurrent [
+	<script>
+	"Flush the default image cache and clear the pointer.
+	Note that this currently leaves 3 directories behind"
+
+	Current ifNil: [ ^self ].
+	Current flush.
+	Current := nil.
+]
+
+{ #category : #private }
+BlLocalImageCache >> cacheFileFor: aFileReference size: cacheSize [
+	"Answer the file name used to cache aFileReference at cacheSize"
+
+	| cacheFile |
+
+	cacheFile := fileRoot.
+	aFileReference path segments do: 
+		[ :each | cacheFile := cacheFile / each ].
+	cacheFile := cacheFile / (cacheSize printString, '.jpg').
+	^cacheFile
+]
+
+{ #category : #private }
+BlLocalImageCache >> cacheRoot [ 
+
+	^cacheRoot
+]
 
 { #category : #configuration }
 BlLocalImageCache >> cacheRoot: aFileReference [
@@ -59,6 +102,7 @@ BlLocalImageCache >> cacheRoot: aFileReference [
 	fileRoot ensureCreateDirectory.
 	networkRoot := cacheRoot / 'network'.
 	networkRoot ensureCreateDirectory.
+	self initHousekeeping.
 ]
 
 { #category : #private }
@@ -93,13 +137,40 @@ BlLocalImageCache >> fileAt: aFileReference size: minImageSize [
 	If minImageSize isNil, answer the form from the original file.
 	Otherwise answer the cached image which is larger than minImageSize."
 
-	| cacheSize |
+	| fileReference cacheSize cacheFile form |
 
-	minImageSize ifNil: [ ^self formFor: aFileReference ].
+	fileReference := aFileReference asFileReference.
+	minImageSize ifNil: [ ^self formFor: fileReference ].
 	cacheSize := self cacheSizeFor: minImageSize.
-	cacheSize ifNil: [ ^self formFor: aFileReference ].
-	"WIP: Find or create the cache entry"
-	self shouldBeImplemented.
+	cacheSize ifNil: [ ^self formFor: fileReference ].
+	cacheFile := self cacheFileFor: fileReference size: cacheSize.
+	cacheFile exists ifTrue: [ 
+		hits := hits + 1.
+		^self formFor: cacheFile ].
+	form := self formFor: fileReference.
+	form := form scaledToSize: cacheSize@cacheSize.
+	cacheFile parent ensureCreateDirectory.
+	PluginBasedJPEGReadWriter putForm: form onFileNamed: cacheFile.
+	housekeeper add: cacheFile.
+	misses := misses + 1.
+	^form.
+
+]
+
+{ #category : #private }
+BlLocalImageCache >> fileRoot [
+	"This is only here to facilitate testing"
+
+	^fileRoot
+]
+
+{ #category : #manage }
+BlLocalImageCache >> flush [ 
+	"Remove all cached data from the receiver"
+
+	fileRoot ensureDeleteAllChildren.
+	networkRoot ensureDeleteAllChildren.
+	housekeeper updateCurrentSize.
 ]
 
 { #category : #private }
@@ -129,18 +200,53 @@ BlLocalImageCache >> getBufferFor: aFileReference [
 ]
 
 { #category : #accessing }
+BlLocalImageCache >> hitRate [
+	"Answer the receiver's hit rate"
+
+	^hits / (hits + misses)
+]
+
+{ #category : #accessing }
+BlLocalImageCache >> hits [
+	^ hits
+]
+
+{ #category : #private }
+BlLocalImageCache >> housekeeper [
+	"This is only here to facilitate testing"
+
+	^housekeeper
+]
+
+{ #category : #configuration }
 BlLocalImageCache >> imageSizes: anArray [
-	"Answer the image sizes to cache.
+	"Set the image sizes to cache.
 	The longer dimension of the image will be the size specified."
 
 	imageSizes := anArray sorted.
 ]
 
 { #category : #initialization }
+BlLocalImageCache >> initHousekeeping [
+	"Set up default housekeeping for the receiver"
+
+	housekeeper := BlImageCacheHousekeeper for: self.
+	housekeeper scheduleUpdateCurrentSize.
+]
+
+{ #category : #initialization }
 BlLocalImageCache >> initialize [
 
-	self maxCacheSize: 500000000. "500MB"
+	self maxCacheSize: 100000000. "100MB"
 	self imageSizes: self defaultImageSizes.
+	hits := 0.
+	misses := 0.
+]
+
+{ #category : #accessing }
+BlLocalImageCache >> maxCacheSize [ 
+
+	^maxCacheSize 
 ]
 
 { #category : #configuration }
@@ -149,9 +255,32 @@ BlLocalImageCache >> maxCacheSize: anInteger [
 	maxCacheSize := anInteger
 ]
 
+{ #category : #accessing }
+BlLocalImageCache >> misses [
+	^ misses
+]
+
+{ #category : #private }
+BlLocalImageCache >> networkRoot [
+	"This is only here to facilitate testing"
+
+	^networkRoot
+]
+
 { #category : #initialization }
 BlLocalImageCache >> setDefaultLocation [
 
 	self cacheRoot: (FileLocator temp / 'gtoolkit' / 'cache' / 'images') resolve.
 
+]
+
+{ #category : #accessing }
+BlLocalImageCache >> taskitRunner [
+
+	^ taskitRunner ifNil: [ taskitRunner := BlHousekeepingWorkerPool ]
+]
+
+{ #category : #accessing }
+BlLocalImageCache >> taskitRunner: anObject [
+	taskitRunner := anObject
 ]

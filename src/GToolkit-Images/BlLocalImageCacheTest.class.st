@@ -4,12 +4,43 @@ Class {
 	#category : #'GToolkit-Images-Tests'
 }
 
+{ #category : #accessing }
+BlLocalImageCacheTest class >> resources [ 
+
+	^{ BlLocalImageCacheTestResources. }
+]
+
+{ #category : #accessing }
+BlLocalImageCacheTest >> cache [ 
+
+	^self resource cache
+]
+
+{ #category : #accessing }
+BlLocalImageCacheTest >> resource [
+
+	^self class resources first current
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCacheFileForSize [
+
+	| cache file cacheFile |
+
+	cache := BlLocalImageCacheTestResources current cache.
+	file := '/a/b/c.jpg' asFileReference.
+	cacheFile := cache cacheFileFor: file size: 200.
+	self assert: cacheFile 
+			equals: cache fileRoot / 'a' / 'b' / 'c.jpg' / '200.jpg'
+]
+
 { #category : #tests }
 BlLocalImageCacheTest >> testCacheSizeFor [
 
 	| cache requestedSize |
 
 	cache := BlLocalImageCache new.
+	cache taskitRunner: TKTLocalProcessTaskRunner new.
 	self assert: (cache cacheSizeFor: 100) equals: 200.
 	self assert: (cache cacheSizeFor: 200) equals: 200.
 	requestedSize := cache defaultImageSizes second - 1.
@@ -24,6 +55,74 @@ BlLocalImageCacheTest >> testCacheSizeFor [
 ]
 
 { #category : #tests }
+BlLocalImageCacheTest >> testCachedSize100 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 100.
+	maxDimension := cachedForm width max: cachedForm height.
+	"The next largest size is 200"
+	self 
+		assert: maxDimension 
+		equals: 200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize200 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 200.
+	maxDimension := cachedForm width max: cachedForm height.
+	"The next largest size is 200"
+	self 
+		assert: maxDimension 
+		equals: 200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize2000 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 2000.
+	maxDimension := cachedForm width max: cachedForm height.
+	"This is larger than the original, we should get back the original"
+	self 
+		assert: maxDimension 
+		equals: 1200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize700 [
+
+	| cache cachedForm maxDimension |
+
+	cache := self cache.
+	cachedForm := cache fileAt: self resource image1200 size: 700.
+	maxDimension := cachedForm width max: cachedForm height.
+	"The next largest size is 800"
+	self 
+		assert: maxDimension 
+		equals: 800
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSizeNil [
+
+	| cache |
+
+	cache := self cache.
+	"Comparing the form contents is heavy work, just check the size for now"
+	self 
+		assert: (cache fileAt: self resource image1200 size: nil) bitsSize
+		equals: (ImageReadWriter gtFormFromFileReference: self resource image1200) bitsSize
+]
+
+{ #category : #tests }
 BlLocalImageCacheTest >> testDeafultImageSizes [
 
 	| defaultSizes |
@@ -31,4 +130,26 @@ BlLocalImageCacheTest >> testDeafultImageSizes [
 	defaultSizes := BlLocalImageCache new defaultImageSizes.
 	self assert: defaultSizes size equals: 3.
 	self assert: defaultSizes first equals: 200.
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testFlush [
+
+	| cache |
+
+	cache := self cache.
+	cache fileAt: self resource image1200 size: 100.
+	cache fileAt: self resource image1200 size: 300.
+	cache fileAt: self resource image1200 size: 700.
+
+	self 
+		assert: (self resource cacheRoot allChildren select: [ :each | each basename endsWith: 'jpg' ]) size
+		equals: 4.
+
+	cache flush.
+
+	self 
+		assert: (self resource cacheRoot allChildren select: [ :each | each basename endsWith: 'jpg' ]) size
+		equals: 0
+
 ]

@@ -1,8 +1,6 @@
 "
-BlAsyncUIWorkerPool is a TKTCommonQueueWorkerPool that:
+BlHousekeepingWorkerPool is a TKTCommonQueueWorkerPool that runs the workers at userBackgroundPriority and limits the number of concurrent tasks so that the UI thread is still responsive.
 
-- uses a WaitfreePriorityQueue so that tasks are executed by task priority (rather than FIFO).
-- runs the workers at low priority so that the UI thread is still responsive (see BlTKTBackgroundProcessProvider>>createProcessDoing:named:)
 
 Public API and Key Messages
 
@@ -10,7 +8,7 @@ The public API and key messages are the same as for TKTCommonWorkerPool.
 
 "
 Class {
-	#name : #BlAsyncUIWorkerPool,
+	#name : #BlHousekeepingWorkerPool,
 	#superclass : #TKTCommonQueueWorkerPool,
 	#classVars : [
 		'Current'
@@ -19,7 +17,7 @@ Class {
 }
 
 { #category : #accessing }
-BlAsyncUIWorkerPool class >> current [
+BlHousekeepingWorkerPool class >> current [
 
 	^Current ifNil: [ 
 		Current := self new
@@ -29,16 +27,16 @@ BlAsyncUIWorkerPool class >> current [
 ]
 
 { #category : #scheduling }
-BlAsyncUIWorkerPool class >> schedule: aValuable [
+BlHousekeepingWorkerPool class >> schedule: aValuable [
 	"Schedule the supplied valuable in the current worker pool"
 
-	TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
+	TKTConfiguration processProvider: BlTKTHousekeepingProcessProvider new during: [ 
 		self current schedule: aValuable ].
 
 ]
 
 { #category : #managing }
-BlAsyncUIWorkerPool class >> stopCurrent [
+BlHousekeepingWorkerPool class >> stopCurrent [
 	<script>
 	"Stop the default worker pool and remove the reference to it"
 
@@ -48,15 +46,14 @@ BlAsyncUIWorkerPool class >> stopCurrent [
 ]
 
 { #category : #initialization }
-BlAsyncUIWorkerPool >> initialize [ 
+BlHousekeepingWorkerPool >> initialize [ 
 
 	super initialize.
-	taskQueue := AtomicSharedPriorityQueue new.
-	self name: 'AsyncElementWorker-', self identityHash asString.
+	self name: 'BlHousekeepingWorker-', self identityHash asString.
 ]
 
 { #category : #printing }
-BlAsyncUIWorkerPool >> printOn: aStream [
+BlHousekeepingWorkerPool >> printOn: aStream [
 	| freeWorkers | 
 	freeWorkers := workers select: #isFree.
 	aStream

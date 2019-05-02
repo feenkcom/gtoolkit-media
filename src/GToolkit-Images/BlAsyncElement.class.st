@@ -40,6 +40,7 @@ Internal Representation and Key Implementation Points.
     Instance Variables
 	priority:		<Integer>  An optional manually set priority at relative to other BlAsyncElements. 0 is highest priority.
 	visibleElement: <BlElement> The dynamic priority will be based on whether the receiver is visible within the visibleElement.
+	taskitRunner: <Object> The object that is used to schedule tasks.  The default is BlAsyncUIWorkerPool, but this can be replaced with TKTLocalProcessTaskRunner to facilitate testing.
 
     Implementation Points
 "
@@ -48,7 +49,8 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'priority',
-		'visibleElement'
+		'visibleElement',
+		'taskitRunner'
 	],
 	#category : #'GToolkit-Images-Elements'
 }
@@ -103,6 +105,17 @@ BlAsyncElement >> queueEntry [
 	"Answer a valuable that will update the receiver when processed"
 
 	^self subclassResponsibility
+]
+
+{ #category : #accessing }
+BlAsyncElement >> taskitRunner [
+
+	^ taskitRunner ifNil: [ taskitRunner := BlAsyncUIWorkerPool ]
+]
+
+{ #category : #accessing }
+BlAsyncElement >> taskitRunner: anObject [
+	taskitRunner := anObject
 ]
 
 { #category : #accessing }
