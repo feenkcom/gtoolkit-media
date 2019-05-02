@@ -4,9 +4,9 @@ Extension { #name : #WaitfreeQueue }
 WaitfreeQueue >> gtGraphFor: aView [
 	<gtView> 
 
-	^aView explicit 
+	^aView mondrian 
 		title: 'Graph' translated;
-		stencil: [ self mondrianView asElement ]
+		painting: [ :mondrian | self paintGraphWith: mondrian ]
 ]
 
 { #category : #'*GToolkit-Images' }
@@ -70,9 +70,9 @@ WaitfreeQueue >> itemCount [
 ]
 
 { #category : #'*GToolkit-Images' }
-WaitfreeQueue >> mondrianView [
+WaitfreeQueue >> paintGraphWith: view [
 
-	| view itemArray items edges passiveEdges |
+	| itemArray items edges passiveEdges |
 
 	itemArray := self itemArray.
 	items := IdentitySet new.
@@ -89,22 +89,28 @@ WaitfreeQueue >> mondrianView [
 		each isZombie
 			ifTrue: [ passiveEdges add: each -> each object ]
 			ifFalse: [ edges add: each -> each object ] ].
-	view := GtMondrian new.
 	view nodes 
-		shape: [ :node | BlTextElement new 
+		stencil: [ :node | BlTextElement new 
 						text: (node == dummy
 									ifTrue: [ 'dummy' ]
-									ifFalse: [ node gtDisplayString ]) asRopedText;
+									ifFalse: [ node gtDisplayString ]) asRopedText glamorousRegularFont;
 						padding: (BlInsets all: 5);
 						geometry: BlEllipse new ];
 		with: items.
 	view edges 
+		fromCenterBottom;
+		toCenterTop;
+		stencil: [ :each | 
+			BlParabollaArcElement new 
+				border: (BlBorder paint: (Color black alpha: 0.4) width: 2);
+				curvatureFraction: 0.2;
+				toHead: (BlArrowheadSimpleArrow new
+					border: (BlBorder builder paint: (Color black alpha: 0.4); width: 2; build))];
 		connect: edges from: #key to: #value;
 		passive;
 		connect: passiveEdges from: #key to: #value.
-	view layout dominanceTree "custom: GtGradNorthHierarchicalLayout new"
+	view layout dominanceTree levelDistance: 30 "custom: GtGradNorthHierarchicalLayout new"
 		"custom: GtGraphDominanceTreeLayout new".
-	^view
 ]
 
 { #category : #'*GToolkit-Images' }
