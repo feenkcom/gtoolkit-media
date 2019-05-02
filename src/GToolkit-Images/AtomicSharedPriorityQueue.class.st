@@ -26,7 +26,7 @@ Internal Representation and Key Implementation Points.
 Class {
 	#name : #AtomicSharedPriorityQueue,
 	#superclass : #AtomicSharedQueue,
-	#category : #'GToolkit-Images-Model'
+	#category : #'GToolkit-Images-Queue'
 }
 
 { #category : #ui }

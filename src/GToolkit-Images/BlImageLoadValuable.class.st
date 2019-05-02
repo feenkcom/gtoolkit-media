@@ -43,6 +43,7 @@ BlImageLoadValuable class >> file: aFileReference element: aBlElement [
 
 { #category : #acccessing }
 BlImageLoadValuable >> extent [ 
+	"Answer the receiver's element extent if open, or nil"
 
 	| extent |
 
@@ -54,51 +55,16 @@ BlImageLoadValuable >> extent [
 
 { #category : #acccessing }
 BlImageLoadValuable >> form [ 
-	"Answer the form from the receiver's file scaled to displayWidth and displayHeight (if specified)"
+	"Answer the form from the cache"
 
-	^form ifNil: [ form := self getForm ]
-]
-
-{ #category : #private }
-BlImageLoadValuable >> getBuffer [
-	"Answer the contents of the file in a ByteArray.
-	While this method is synchronous, file access is async"
-
-	| asyncFile fileSemaphore buffer |
-
-	asyncFile := AsyncFile new.
-	fileSemaphore := Semaphore new.
-	asyncFile open: file pathString forWrite: false.
-	[ asyncFile readByteCount: file size fromFilePosition: 0 onCompletionDo: 
-		[ :buf | buffer := buf.  fileSemaphore signal ].
-        fileSemaphore wait. ] ensure: [ asyncFile close ].
-	"Hack to work around AsyncFile returning a string instead of a ByteArray"
-	ByteArray adoptInstance: buffer.
-	^buffer
-]
-
-{ #category : #private }
-BlImageLoadValuable >> getForm [
-	"Answer the scaled form for the receiver's element.
-	For now always re-read the form from disk, possible futures include:
-	If the receiver doesn't have a form, or it has increased in size, load from disk and scale.
-	If the form is being reduced in size, just scale the existing form"
-
-	| newForm |
-
-	element needsUpdate ifFalse: [ ^nil ].
-
-	newForm := self getNewForm.
-	newForm extent = self extent ifFalse:
-		[ newForm := newForm scaledToSize: self extent ].
-	^newForm
+	^form ifNil: [ form := self getNewForm ]
 ]
 
 { #category : #private }
 BlImageLoadValuable >> getNewForm [
-	"Retrieve the image from the file"
+	"Retrieve the form from the file with an extent the same size or larger than the receiver"
 
-	^ImageReadWriter gtFormFromBuffer: self getBuffer.
+	^BlLocalImageCache current fileAt: file size: self extent max
 
 ]
 
@@ -110,12 +76,11 @@ BlImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
 	element := aBlElement
 ]
 
-{ #category : #evaluating }
+{ #category : #private }
 BlImageLoadValuable >> updateElement [
-	"Evaluate the receiver and update its element"
+	"Update the receiver's element's form"
 
-	^form ifNil: [
-		"1.5 seconds wait."
-		self form ifNotNil: [ element form: form ].
-		form ]
+	"1.5 seconds wait."
+	element form: self form.
+	^form
 ]
