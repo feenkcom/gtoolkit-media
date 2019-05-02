@@ -71,32 +71,24 @@ WaitfreeQueue >> itemCount [
 
 { #category : #'*GToolkit-Images' }
 WaitfreeQueue >> paintGraphWith: view [
-
-	| itemArray items edges passiveEdges |
-
+	| itemArray |
 	itemArray := self itemArray.
-	items := IdentitySet new.
-	items add: dummy.
-	itemArray do: [ :item |
-		items
-			add: item;
-			add: item object ].
-	edges := OrderedCollection new.
-	passiveEdges := OrderedCollection new.
-	edges add: dummy -> dummy next.
-	itemArray do: [ :each |
-		edges add: each -> each next.
-		each isZombie
-			ifTrue: [ passiveEdges add: each -> each object ]
-			ifFalse: [ edges add: each -> each object ] ].
 	view nodes 
-		stencil: [ :node | BlTextElement new 
-						text: (node == dummy
-									ifTrue: [ 'dummy' ]
-									ifFalse: [ node gtDisplayString ]) asRopedText glamorousRegularFont;
-						padding: (BlInsets all: 5);
-						geometry: BlEllipse new ];
-		with: items.
+		stencil: [ :node | 
+				BlTextElement new 
+						text: 'dummy' asRopedText glamorousRegularFont;
+						padding: (BlInsets all: 5) ];
+		with: dummy asOrderedCollection;
+		stencil: [ :node | 
+				BlTextElement new 
+						text: node gtDisplayString asRopedText glamorousRegularFont;
+						padding: (BlInsets all: 5) ];
+		with: itemArray;
+		stencil: [ :node | 
+				BlTextElement new 
+						text: ((node gtDisplayString asRopedText glamorousRegularFont foreground: Color blue));
+						padding: (BlInsets all: 5) ];
+		with: (itemArray collect: #object).
 	view edges 
 		fromCenterBottom;
 		toCenterTop;
@@ -106,9 +98,14 @@ WaitfreeQueue >> paintGraphWith: view [
 				curvatureFraction: 0.2;
 				toHead: (BlArrowheadSimpleArrow new
 					border: (BlBorder builder paint: (Color black alpha: 0.4); width: 2; build))];
-		connect: edges from: #key to: #value;
-		passive;
-		connect: passiveEdges from: #key to: #value.
+		connect: (itemArray, dummy asOrderedCollection) from: #yourself to: #next;
+		stencil: [ :each | 
+			BlParabollaArcElement new 
+				border: (BlBorder paint: (Color blue alpha: 0.8) width: 2);
+				curvatureFraction: 0.2;
+				toHead: (BlArrowheadSimpleArrow new
+					border: (BlBorder builder paint: (Color blue alpha: 0.8); width: 2; build))];
+		connect: itemArray from: #yourself to: #object.
 	view layout dominanceTree levelDistance: 30 "custom: GtGradNorthHierarchicalLayout new"
 		"custom: GtGraphDominanceTreeLayout new".
 ]
