@@ -88,7 +88,7 @@ WaitfreeQueue >> paintGraphWith: view [
 				BlTextElement new 
 						text: ((node gtDisplayString asRopedText glamorousRegularFont foreground: Color blue));
 						padding: (BlInsets all: 5) ];
-		with: (itemArray collect: #object).
+		with: (itemArray collect: #object) asIdentitySet.
 	view edges 
 		fromCenterBottom;
 		toCenterTop;
