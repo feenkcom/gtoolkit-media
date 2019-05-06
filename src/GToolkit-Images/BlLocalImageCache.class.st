@@ -323,7 +323,7 @@ BlLocalImageCache >> url: aUrl size: minImageSize [
 		"Workaround for ZnEasy not being completely general
 		(it doesn't handle #file scheme)"
 		[ content := znUrl scheme = #file
-				ifFalse: [ ZnEasy get: znUrl ]
+				ifFalse: [ (ZnEasy get: znUrl) entity bytes ]
 				ifTrue: [ znUrl asFileReference gtBinaryContents ].
 		fileReference parent ensureCreateDirectory.
 		fileReference binaryWriteStreamDo: [ :stream |

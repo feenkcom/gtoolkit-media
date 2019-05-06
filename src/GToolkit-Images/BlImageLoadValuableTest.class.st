@@ -23,7 +23,7 @@ BlImageLoadValuableTest >> testValue [
 	element instVarNamed: 'bounds' put: (0@0 corner: 200@200).
 	"Force single threaded operation of the cache"
 	BlLocalImageCache current taskitRunner: TKTLocalProcessTaskRunner new.
-	valuable := BlImageLoadValuable file: resources f1 element: element.
+	valuable := BlFileImageLoadValuable file: resources f1 element: element.
 	form := valuable getNewForm.
 	"Restore normal threaded operation of the cache"
 	BlLocalImageCache current taskitRunner: TKTLocalProcessTaskRunner new.

@@ -93,3 +93,23 @@ GToolkitImagesExamples >> imageInSpace: aFileReference [
 	space show.
 	^space
 ]
+
+{ #category : #examples }
+GToolkitImagesExamples >> urlImageInSpace [
+	<gtExample>
+
+	| url element space |
+
+	url := 'https://picsum.photos/200/100'.
+
+	element := BlUrlImageElement url: url.
+	element constraintsDo: [ :c | 
+		c horizontal matchParent.
+		c vertical matchParent ].
+
+	space := BlSpace new.
+	space root addChild: element.
+	space title: url.
+	space show.
+	^space
+]
