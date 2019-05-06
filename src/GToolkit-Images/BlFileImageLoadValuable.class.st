@@ -26,42 +26,22 @@ Future performance plans:
 
 "
 Class {
-	#name : #BlImageLoadValuable,
-	#superclass : #BlAsyncElementValuable,
+	#name : #BlFileImageLoadValuable,
+	#superclass : #BlAsyncImageElementValuable,
 	#instVars : [
-		'file',
-		'form'
+		'file'
 	],
 	#category : #'GToolkit-Images-TaskIt'
 }
 
 { #category : #'instance creation' }
-BlImageLoadValuable class >> file: aFileReference element: aBlElement [
+BlFileImageLoadValuable class >> file: aFileReference element: aBlElement [
 
 	^self new initializeFile: aFileReference element: aBlElement
 ]
 
-{ #category : #acccessing }
-BlImageLoadValuable >> extent [ 
-	"Answer the receiver's element extent if open, or nil"
-
-	| extent |
-
-	extent := element extent.
-	^(extent x = 0 or: [ extent y = 0 ]) 
-		ifTrue: [ nil ]
-		ifFalse: [ extent ]
-]
-
-{ #category : #acccessing }
-BlImageLoadValuable >> form [ 
-	"Answer the form from the cache"
-
-	^form ifNil: [ form := self getNewForm ]
-]
-
 { #category : #private }
-BlImageLoadValuable >> getNewForm [
+BlFileImageLoadValuable >> getNewForm [
 	"Retrieve the form from the file with an extent the same size or larger than the receiver"
 
 	^BlLocalImageCache current fileAt: file size: self extent max
@@ -69,18 +49,9 @@ BlImageLoadValuable >> getNewForm [
 ]
 
 { #category : #initialization }
-BlImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
+BlFileImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
 
 	self initialize.
 	file := aFileReference asFileReference.
 	element := aBlElement
-]
-
-{ #category : #private }
-BlImageLoadValuable >> updateElement [
-	"Update the receiver's element's form"
-
-	"1.5 seconds wait."
-	element form: self form.
-	^form
 ]

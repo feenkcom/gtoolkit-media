@@ -35,6 +35,23 @@ BlLocalImageCacheTest >> testCacheFileForSize [
 ]
 
 { #category : #tests }
+BlLocalImageCacheTest >> testCacheFileForUrlSize [
+
+	| url znUrl cache hash cacheFile |
+
+	url := 'https://gtoolkit.com/pictures/gtoolkit-icon.png'.
+	znUrl := url asZnUrl.
+	hash := (SHA256 new hashStream: znUrl asString readStream) hex.
+	cache := BlLocalImageCacheTestResources current cache.
+	cacheFile := cache cacheFileForUrl: znUrl size: nil.
+	self assert: cacheFile 
+			equals: cache networkRoot / hash / 'original.image'.
+	cacheFile := cache cacheFileForUrl: url asZnUrl size: 200.
+	self assert: cacheFile 
+			equals: cache networkRoot / hash / '200.jpg'
+]
+
+{ #category : #tests }
 BlLocalImageCacheTest >> testCacheSizeFor [
 
 	| cache requestedSize |
@@ -123,6 +140,44 @@ BlLocalImageCacheTest >> testCachedSizeNil [
 ]
 
 { #category : #tests }
+BlLocalImageCacheTest >> testCachedUrlSize100 [
+
+	| cache cachedForm |
+
+	cache := self cache.
+	cachedForm := cache url: self resource image400 asZnUrl size: 100.
+	"The next largest size is 200"
+	self 
+		assert: cachedForm extent max
+		equals: 200
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedUrlSize400 [
+
+	| cache cachedForm |
+
+	cache := self cache.
+	cachedForm := cache url: self resource image400 asZnUrl size: 400.
+	self 
+		assert: cachedForm extent max
+		equals: 400
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedUrlSize800 [
+
+	| cache cachedForm |
+
+	cache := self cache.
+	cachedForm := cache url: self resource image400 asZnUrl size: 800.
+	"800 is larger than the original, so we should get back the original"
+	self 
+		assert: cachedForm extent max
+		equals: 400
+]
+
+{ #category : #tests }
 BlLocalImageCacheTest >> testDeafultImageSizes [
 
 	| defaultSizes |
@@ -138,6 +193,7 @@ BlLocalImageCacheTest >> testFlush [
 	| cache |
 
 	cache := self cache.
+	cache flush.
 	cache fileAt: self resource image1200 size: 100.
 	cache fileAt: self resource image1200 size: 300.
 	cache fileAt: self resource image1200 size: 700.

@@ -33,6 +33,18 @@ BlAsyncElementValuable >> asTask [
 	^TKTTask valuable: self
 ]
 
+{ #category : #acccessing }
+BlAsyncElementValuable >> extent [ 
+	"Answer the receiver's element extent if open, or nil"
+
+	| extent |
+
+	extent := element extent.
+	^(extent x = 0 or: [ extent y = 0 ]) 
+		ifTrue: [ nil ]
+		ifFalse: [ extent ]
+]
+
 { #category : #accessing }
 BlAsyncElementValuable >> taskPriority [
 	"Answer the task priority of the receiver.

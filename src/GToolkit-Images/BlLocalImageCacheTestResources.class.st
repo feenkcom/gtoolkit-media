@@ -31,6 +31,12 @@ BlLocalImageCacheTestResources >> image1200 [
 	^fileRoot / 'image1200.jpg'
 ]
 
+{ #category : #accessing }
+BlLocalImageCacheTestResources >> image400 [
+
+	^fileRoot / 'image400.jpg'
+]
+
 { #category : #running }
 BlLocalImageCacheTestResources >> setUp [ 
 
@@ -48,7 +54,9 @@ BlLocalImageCacheTestResources >> setUp [
 	cache imageSizes: #(200 400 800).
 	cache cacheRoot: cacheRoot.
 
-	form := self testForm scaledToSize: 1200@900.
+	form := self testForm.
+	PluginBasedJPEGReadWriter putForm: form onFileNamed: self image400.
+	form := form scaledToSize: 1200@900.
 	PluginBasedJPEGReadWriter putForm: form onFileNamed: self image1200.
 ]
 
