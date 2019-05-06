@@ -88,6 +88,18 @@ BlLocalImageCache >> cacheFileFor: aFileReference size: cacheSize [
 ]
 
 { #category : #private }
+BlLocalImageCache >> cacheFileForUrl: znUrl size: cacheSize [
+
+	| fileReference hash |
+
+	hash := (SHA256 new hashStream: znUrl asString readStream) hex.
+	fileReference := networkRoot / hash / (cacheSize
+		ifNil: [ 'original.image' ]
+		ifNotNil: [ cacheSize asString, '.jpg' ]).
+	^fileReference
+]
+
+{ #category : #private }
 BlLocalImageCache >> cacheRoot [ 
 
 	^cacheRoot
@@ -283,4 +295,56 @@ BlLocalImageCache >> taskitRunner [
 { #category : #accessing }
 BlLocalImageCache >> taskitRunner: anObject [
 	taskitRunner := anObject
+]
+
+{ #category : #accessing }
+BlLocalImageCache >> url: aUrl size: minImageSize [
+	"Answer the Form for the specified URL and requested size.
+	If minImageSize isNil, answer the form from the original file.
+	Otherwise answer the cached image which is larger than minImageSize."
+
+	| znUrl content fileReference cacheSize cacheFile form |
+
+	znUrl := aUrl asZnUrl.
+	"If the appropriate cache entry already exists, just return it.
+	Otherwise look for the original. If that doesn't exist, download it."
+	minImageSize ifNotNil: [ 
+		cacheSize := self cacheSizeFor: minImageSize.
+		cacheFile := self cacheFileForUrl: znUrl size: cacheSize.
+		cacheFile exists ifTrue: [ 
+			hits := hits + 1.
+			^self formFor: cacheFile ] ].
+
+	"The cache file doesn't exist or the original has been requested"
+	"Ensure we have the original saved to file and its form loaded"
+	fileReference := self cacheFileForUrl: znUrl size: nil.
+	"Download the original if required"
+	fileReference exists ifFalse:
+		"Workaround for ZnEasy not being completely general
+		(it doesn't handle #file scheme)"
+		[ content := znUrl scheme = #file
+				ifFalse: [ ZnEasy get: znUrl ]
+				ifTrue: [ znUrl asFileReference gtBinaryContents ].
+		fileReference parent ensureCreateDirectory.
+		fileReference binaryWriteStreamDo: [ :stream |
+			stream nextPutAll: content ].
+		housekeeper add: fileReference.
+		misses := misses + 1.
+		form := ImageReadWriter formFromStream: content readStream ]
+	ifTrue:
+		[ form := self formFor: fileReference ].
+
+	minImageSize ifNil: [ ^self formFor: fileReference ].
+
+	"If the requested cache size is larger than the original, just return the original"
+	cacheSize >  form extent max ifTrue: [ ^form ].
+
+	"Answer the form scaled to cacheSize"
+	form := form scaledToSize: cacheSize@cacheSize.
+	cacheFile parent ensureCreateDirectory.
+	PluginBasedJPEGReadWriter putForm: form onFileNamed: cacheFile.
+	housekeeper add: cacheFile.
+	misses := misses + 1.
+	^form.
+
 ]
