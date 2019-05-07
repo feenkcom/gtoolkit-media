@@ -21,12 +21,16 @@ BlImageLoadValuableTest >> testValue [
 					size: 200@200.
 	"Force the element to look like it is open from the valuable's perspective"
 	element instVarNamed: 'bounds' put: (0@0 corner: 200@200).
-	"Force single threaded operation of the cache"
+	"Force single threaded operation of the cache and update the current size"
 	BlLocalImageCache current taskitRunner: TKTLocalProcessTaskRunner new.
+	BlLocalImageCache current housekeeper updateCurrentSize.
+
 	valuable := BlFileImageLoadValuable file: resources f1 element: element.
 	form := valuable getNewForm.
+
 	"Restore normal threaded operation of the cache"
 	BlLocalImageCache current taskitRunner: TKTLocalProcessTaskRunner new.
+
 	self assert: form class equals: Form.
 	"The dummy element actually has 0 extent, so the original size is preserved."
 	self assert: form width equals: 200.
