@@ -13,6 +13,13 @@ BlUrlImageElement class >> url: aZnUrl [
 	^self new url: aZnUrl
 ]
 
+{ #category : #accessing }
+BlUrlImageElement >> maxPoolSize [
+	"Answer the maximum number of tasks that can be executed concurrently"
+
+	^5
+]
+
 { #category : #'async processing' }
 BlUrlImageElement >> queueEntry [
 	"Answer a TaskIt valuable that will update the receiver."

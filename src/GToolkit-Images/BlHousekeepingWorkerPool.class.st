@@ -9,40 +9,20 @@ The public API and key messages are the same as for TKTCommonWorkerPool.
 "
 Class {
 	#name : #BlHousekeepingWorkerPool,
-	#superclass : #TKTCommonQueueWorkerPool,
+	#superclass : #BlVariableSizeWorkerPool,
 	#classVars : [
 		'Current'
 	],
 	#category : #'GToolkit-Images-TaskIt'
 }
 
-{ #category : #accessing }
-BlHousekeepingWorkerPool class >> current [
-
-	^Current ifNil: [ 
-		Current := self new
-			poolMaxSize: 1;
-			start;
-			yourself ]
-]
-
 { #category : #scheduling }
-BlHousekeepingWorkerPool class >> schedule: aValuable [
-	"Schedule the supplied valuable in the current worker pool"
+BlHousekeepingWorkerPool class >> schedule: aValuable maxPoolSize: maxPoolSize [
+	"Schedule the supplied valuable with maxPoolSize worker pools"
 
 	TKTConfiguration processProvider: BlTKTHousekeepingProcessProvider new during: [ 
-		self current schedule: aValuable ].
+		(self withPoolSize: maxPoolSize) schedule: aValuable ].
 
-]
-
-{ #category : #managing }
-BlHousekeepingWorkerPool class >> stopCurrent [
-	<script>
-	"Stop the default worker pool and remove the reference to it"
-
-	Current ifNil: [ ^self ].
-	Current stop.
-	Current := nil.
 ]
 
 { #category : #initialization }

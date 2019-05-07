@@ -90,12 +90,17 @@ BlLocalImageCache >> cacheFileFor: aFileReference size: cacheSize [
 { #category : #private }
 BlLocalImageCache >> cacheFileForUrl: znUrl size: cacheSize [
 
-	| fileReference hash |
+	| fileReference hash signal |
 
 	hash := (SHA256 new hashStream: znUrl asString readStream) hex.
 	fileReference := networkRoot / hash / (cacheSize
 		ifNil: [ 'original.image' ]
 		ifNotNil: [ cacheSize asString, '.jpg' ]).
+	signal := BlImageCacheSignal new 
+		event: #urlMap;
+		value: znUrl.
+	signal properties at: #hash put: hash.
+	signal emit.
 	^fileReference
 ]
 

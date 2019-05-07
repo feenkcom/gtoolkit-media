@@ -11,40 +11,17 @@ The public API and key messages are the same as for TKTCommonWorkerPool.
 "
 Class {
 	#name : #BlAsyncUIWorkerPool,
-	#superclass : #TKTCommonQueueWorkerPool,
-	#classVars : [
-		'Current'
-	],
+	#superclass : #BlVariableSizeWorkerPool,
 	#category : #'GToolkit-Images-TaskIt'
 }
 
-{ #category : #accessing }
-BlAsyncUIWorkerPool class >> current [
-
-	^Current ifNil: [ 
-		Current := self new
-			poolMaxSize: 1;
-			start;
-			yourself ]
-]
-
 { #category : #scheduling }
-BlAsyncUIWorkerPool class >> schedule: aValuable [
-	"Schedule the supplied valuable in the current worker pool"
+BlAsyncUIWorkerPool class >> schedule: aValuable maxPoolSize: maxPoolSize [
+	"Schedule the supplied valuable with maxPoolSize worker pools"
 
 	TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
-		self current schedule: aValuable ].
+		(self withPoolSize: maxPoolSize) schedule: aValuable ].
 
-]
-
-{ #category : #managing }
-BlAsyncUIWorkerPool class >> stopCurrent [
-	<script>
-	"Stop the default worker pool and remove the reference to it"
-
-	Current ifNil: [ ^self ].
-	Current stop.
-	Current := nil.
 ]
 
 { #category : #initialization }

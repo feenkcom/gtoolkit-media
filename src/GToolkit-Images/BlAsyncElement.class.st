@@ -63,6 +63,13 @@ BlAsyncElement >> applyLayoutIn: aBlBounds [
 	self queueAsyncUpdate
 ]
 
+{ #category : #accessing }
+BlAsyncElement >> maxPoolSize [
+	"Answer the maximum number of tasks that can be executed concurrently"
+
+	^1
+]
+
 { #category : #'async processing' }
 BlAsyncElement >> needsUpdate [
 	"Answer a boolean indicating whether the receiver needs to be updated (via an asynchronous task).
@@ -96,7 +103,7 @@ BlAsyncElement >> queueAsyncUpdate [
 
 	self needsUpdate ifFalse: [ ^self ].
 
-	BlAsyncUIWorkerPool schedule: self queueEntry.
+	BlAsyncUIWorkerPool schedule: self queueEntry maxPoolSize: self maxPoolSize.
 
 ]
 

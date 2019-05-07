@@ -124,7 +124,7 @@ GToolkitImagesExamples >> urlGrid [
 
 	space := BlSpace new.
 	space root addChild: scrollPane.
-	space title: 'Gallery thanks to https://picsum.photos'.
+	space title: 'Gallery thanks to https://unsplash.it'.
 	space show.
 	^space
 ]
