@@ -16,6 +16,15 @@ Class {
 	#category : #'GToolkit-Images-TaskIt'
 }
 
+{ #category : #'class initialization' }
+BlHousekeepingWorkerPool class >> initialize [ 
+	<script>
+
+	self stopAll.
+	workerPools := Dictionary new.
+
+]
+
 { #category : #scheduling }
 BlHousekeepingWorkerPool class >> schedule: aValuable maxPoolSize: maxPoolSize [
 	"Schedule the supplied valuable with maxPoolSize worker pools"
