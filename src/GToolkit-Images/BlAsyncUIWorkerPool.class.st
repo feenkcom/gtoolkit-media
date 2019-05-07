@@ -15,6 +15,15 @@ Class {
 	#category : #'GToolkit-Images-TaskIt'
 }
 
+{ #category : #'class initialization' }
+BlAsyncUIWorkerPool class >> initialize [ 
+	<script>
+
+	self stopAll.
+	workerPools := Dictionary new.
+
+]
+
 { #category : #scheduling }
 BlAsyncUIWorkerPool class >> schedule: aValuable maxPoolSize: maxPoolSize [
 	"Schedule the supplied valuable with maxPoolSize worker pools"
