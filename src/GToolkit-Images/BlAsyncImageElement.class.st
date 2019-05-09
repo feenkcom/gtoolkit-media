@@ -62,7 +62,7 @@ BlAsyncImageElement >> needsUpdate [
 
 	| currentExtent formSize currentSize |
 
-	self isAttachedToSceneGraph ifFalse: [ ^false ].
+	super needsUpdate ifFalse: [ ^false ].
 	currentExtent := self extent.
 	currentExtent = (0@0) ifTrue: [ ^false ].
 	formSize := form
