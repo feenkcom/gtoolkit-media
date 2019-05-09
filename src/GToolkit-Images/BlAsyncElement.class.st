@@ -35,14 +35,16 @@ Public API and Key Messages
 
    One simple example is simply gorgeous.
  
-Internal Representation and Key Implementation Points.
+!Internal Representation and Key Implementation Points.
 
-    Instance Variables
-	priority:		<Integer>  An optional manually set priority at relative to other BlAsyncElements. 0 is highest priority.
-	visibleElement: <BlElement> The dynamic priority will be based on whether the receiver is visible within the visibleElement.
-	taskitRunner: <Object> The object that is used to schedule tasks.  The default is BlAsyncUIWorkerPool, but this can be replaced with TKTLocalProcessTaskRunner to facilitate testing.
+!!Instance Variables
 
-    Implementation Points
+	priority:						<Integer>  An optional manually set priority at relative to other BlAsyncElements. 0 is highest priority.
+	visibleElement:	<BlElement> The dynamic priority will be based on whether the receiver is visible within the visibleElement.
+	taskitRunner:		<Object> The object that is used to schedule tasks.  The default is BlAsyncUIWorkerPool, but this can be replaced with TKTLocalProcessTaskRunner to facilitate testing.
+	errorStencil:			<BrStencil> The stencil used to display errors that occurred while processing the element asynchronously.  It takes a single argument, the exception that occurred while processing.
+!!Implementation Points
+
 "
 Class {
 	#name : #BlAsyncElement,
@@ -50,7 +52,9 @@ Class {
 	#instVars : [
 		'priority',
 		'visibleElement',
-		'taskitRunner'
+		'taskitRunner',
+		'errorStencil',
+		'asyncException'
 	],
 	#category : #'GToolkit-Images-Elements'
 }
@@ -61,6 +65,38 @@ BlAsyncElement >> applyLayoutIn: aBlBounds [
 	
 	super applyLayoutIn: aBlBounds.
 	self queueAsyncUpdate
+]
+
+{ #category : #accessing }
+BlAsyncElement >> asyncException [
+	^ asyncException
+]
+
+{ #category : #accessing }
+BlAsyncElement >> asyncException: anException [
+	
+	asyncException := anException.
+	asyncException 
+		ifNil: [ self removeChildren ]
+		ifNotNil: [ self addChild: (self errorStencil arguments: { asyncException }) create ].
+]
+
+{ #category : #accessing }
+BlAsyncElement >> errorStencil [
+	^ errorStencil
+]
+
+{ #category : #accessing }
+BlAsyncElement >> errorStencil: aBrStencil [
+
+	errorStencil := aBrStencil asStencil
+]
+
+{ #category : #initialization }
+BlAsyncElement >> initialize [ 
+
+	super initialize.
+	self setDefaultErrorStencil
 ]
 
 { #category : #accessing }
@@ -75,7 +111,7 @@ BlAsyncElement >> needsUpdate [
 	"Answer a boolean indicating whether the receiver needs to be updated (via an asynchronous task).
 	Typically this will be overridden by concrete subclasses to avoid unnecessary updates."
 
-	^self isAttachedToSceneGraph
+	^asyncException isNil and: [ self isAttachedToSceneGraph ]
 
 ]
 
@@ -112,6 +148,16 @@ BlAsyncElement >> queueEntry [
 	"Answer a valuable that will update the receiver when processed"
 
 	^self subclassResponsibility
+]
+
+{ #category : #private }
+BlAsyncElement >> setDefaultErrorStencil [
+
+	self errorStencil: [ :exception |
+		BrButton new
+			look: BrGlamorousButtonWithIconLook;
+			icon: BrGlamorousIcons alarm asElement;
+			action: [ exception inspect ] ]
 ]
 
 { #category : #accessing }

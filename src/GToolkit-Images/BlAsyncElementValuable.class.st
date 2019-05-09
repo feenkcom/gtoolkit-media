@@ -81,6 +81,9 @@ BlAsyncElementValuable >> updateElement [
 { #category : #evaluating }
 BlAsyncElementValuable >> value [
 
-	element needsUpdate ifFalse: [ ^nil ].
-	^self updateElement
+	^[ element needsUpdate 
+			ifTrue: [ self updateElement ]
+			ifFalse: [ nil ] ]
+		on: Error
+		do: [ :ex | element asyncException: ex ]
 ]
