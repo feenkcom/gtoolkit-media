@@ -49,6 +49,7 @@ BlImageCacheHousekeeper >> initialize [
 
 	super initialize.
 	processing := false.
+	currentSize := 0.
 ]
 
 { #category : #initialization }
