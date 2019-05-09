@@ -49,11 +49,14 @@ BlAsyncImageElement >> form [
 ]
 
 { #category : #accessing }
-BlAsyncImageElement >> form: anObject [
+BlAsyncImageElement >> form: aForm [
+	"Set the receiver's form.
+	This can be called from a background process, thus ensure the invalidation is done in the UI process"
 
-	form := anObject.
+	form := aForm.
 	bitmap := nil.
-	form ifNotNil: [ self invalidate ]
+	form ifNotNil: [ self enqueueTask: (BlTaskAction new action: [ self invalidate ]) ]
+
 ]
 
 { #category : #accessing }

@@ -74,11 +74,14 @@ BlAsyncElement >> asyncException [
 
 { #category : #accessing }
 BlAsyncElement >> asyncException: anException [
-	
+	"Set the exception raised while trying to asynchronously process the receiver's content.
+	This can be called from a background process, so ensure element updates occur in the UI process"
+
 	asyncException := anException.
-	asyncException 
-		ifNil: [ self removeChildren ]
-		ifNotNil: [ self addChild: (self errorStencil arguments: { asyncException }) create ].
+	self enqueueTask: (BlTaskAction new action: [ 
+		asyncException 
+			ifNil: [ self removeChildren ]
+			ifNotNil: [ self addChild: (self errorStencil arguments: { asyncException }) create ] ] )
 ]
 
 { #category : #accessing }
