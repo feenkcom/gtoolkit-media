@@ -17,6 +17,6 @@ BlTKTBackgroundProcessProvider >> createProcessDoing: aValuable named: aName [
 	^ (TKTProcess send: #value to: aValuable)
 		annotate: #task with: aValuable;
 		name: aName;
-		priority: Processor userSchedulingPriority - 1;
+		priority: Processor userSchedulingPriority - 5;
 		run
 ]
