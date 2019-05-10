@@ -55,6 +55,7 @@ BlFileImageElement >> file: aFileReference [
 	"Load the supplied file in the background processor (which will update the receiver when done)"
 
 	file := aFileReference asFileReference.
+	self clearForm.
 	self queueAsyncUpdate
 ]
 

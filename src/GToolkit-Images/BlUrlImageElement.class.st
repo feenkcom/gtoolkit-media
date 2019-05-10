@@ -36,5 +36,7 @@ BlUrlImageElement >> url [
 { #category : #accessing }
 BlUrlImageElement >> url: aZnUrl [
 
-	url := aZnUrl asZnUrl
+	url := aZnUrl asZnUrl.
+	self clearForm.
+	self queueAsyncUpdate
 ]
