@@ -1,22 +1,20 @@
 "
 BlAsyncElementValuable is an abstract class that collaborates with BlAsyncElement to asynchronously update the state of BlAsyncElements with minimal impact on UI responsiveness.
 
+BlAsyncElementValuable works with ${class:name=BlAsyncUIWorkerPool}$ to ensure that elements that are currently visible on the screen are updated before elements that are not visible by prioritising tasks based on the elements visibility and distance from the viewable area, see ${method:name=BlAsyncElementValuable>>#taskPriority}$.
 
-Public API and Key Messages
-
-- message one   
-- message two 
-- (for bonus points) how to create instances.
-
-   One simple example is simply gorgeous.
- 
-Internal Representation and Key Implementation Points.
-
-    Instance Variables
-	element:		<Object>
+Subclasses are responsible for deterining the contents and update their element, see ${method:name=BlAsyncElementValuable>>#updateElement}$.
 
 
-    Implementation Points
+!!Public API and Key Messages
+Subclasses of BlAsyncElementValuable typically create their own instance creation methods.
+
+!!Internal Representation and Key Implementation Points
+
+!!!Instance Variables
+	element:		<BlAsyncElement> The element being udpated by the receiver
+
+
 "
 Class {
 	#name : #BlAsyncElementValuable,

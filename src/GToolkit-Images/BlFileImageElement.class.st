@@ -1,33 +1,28 @@
 "
-BlUrlImage is a Bloc element for displaying images:
+BlFileImageElement provides a simple Bloc element for displaying images retrieved from disk.
 
-- Images are loaded and resized on a low (Process) priority queue so that UI responsiveness is maintained.
-- Images are loaded in priority based on: 
--- A manually specified priority 
--- Whether they are visible or,
--- How far they are from the visible area.
+BlFileImageElement takes care of retrieving and caching the image in a background process so that UI responsiveness is not affected.
 
-Public API and Key Messages
+The number of images retrieved concurrently is defined in ${method:name=BlAsyncElement>>#maxPoolSize}$.
 
-- message one   
-- message two 
-- (for bonus points) how to create instances.
 
-   One simple example is simply gorgeous.
+!!Public API and Key Messages
+
+Instances are created by simply passing the url as either a ${class:name=String}$ or ${class:name=ZnUrl}$, e.g.:
+
+[[[
+BlFileImageElement file: (FileLocator imageDirectory / 'pharo-local/iceberg/feenkcom/pillar/archetypes/academic/support/html/img/bubbles.jpg' )
+]]]
+
+
  
-Internal Representation and Key Implementation Points.
+!!Internal Representation and Key Implementation Points
 
-    Instance Variables
-	bitmap:		<Object>
-	file:		<FileReference>
-	form:		<Form>
-	url:		<String>
-	priority: <Integer>  The queue priority to use. nil for default.  0 is highest priority.
+!!!Instance Variables
+
+	file:		<FileReference> The reference to the image being displayed
 
 
-    Implementation Points
-
-- The are multiple tradeoffs between memory consumption, memory management (impact on the memory management system, particularly garbage collection) and CPU usage.   Currently the decision when to reload the Form is hard coded in ${method:name=BlUrlImage>>#needsNewForm}$.
 "
 Class {
 	#name : #BlFileImageElement,
