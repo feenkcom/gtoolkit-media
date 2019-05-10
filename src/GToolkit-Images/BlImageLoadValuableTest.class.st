@@ -13,7 +13,7 @@ BlImageLoadValuableTest class >> resources [
 { #category : #tests }
 BlImageLoadValuableTest >> testValue [
 
-	| valuable resources element form |
+	| valuable resources element entry |
 
 	resources := BlImageTestResources current.
 	element := BlFileImageElement new
@@ -26,13 +26,15 @@ BlImageLoadValuableTest >> testValue [
 	BlLocalImageCache current housekeeper updateCurrentSize.
 
 	valuable := BlFileImageLoadValuable file: resources f1 element: element.
-	form := valuable getNewForm.
+	entry := valuable getNewEntry.
 
 	"Restore normal threaded operation of the cache"
 	BlLocalImageCache current taskitRunner: TKTLocalProcessTaskRunner new.
 
-	self assert: form class equals: Form.
-	"The dummy element actually has 0 extent, so the original size is preserved."
-	self assert: form width equals: 200.
-	self assert: form height equals: 200.
+	self assert: entry class equals: BlImageCacheEntry.
+	"The source form is only 7@7, so the original will be returned."
+	self assert: entry form width equals: 7.
+	self assert: entry form height equals: 7.
+	self assert: entry isOriginal.
+	self assert: entry isSmallest.
 ]

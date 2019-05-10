@@ -54,7 +54,8 @@ Class {
 		'visibleElement',
 		'taskitRunner',
 		'errorStencil',
-		'asyncException'
+		'asyncException',
+		'updateQueued'
 	],
 	#category : #'GToolkit-Images-Elements'
 }
@@ -78,6 +79,7 @@ BlAsyncElement >> asyncException: anException [
 	This can be called from a background process, so ensure element updates occur in the UI process"
 
 	asyncException := anException.
+	updateQueued := false.
 	self enqueueTask: (BlTaskAction new action: [ 
 		asyncException 
 			ifNil: [ self removeChildren ]
@@ -95,11 +97,27 @@ BlAsyncElement >> errorStencil: aBrStencil [
 	errorStencil := aBrStencil asStencil
 ]
 
+{ #category : #'async processing' }
+BlAsyncElement >> flagUpdateDone [
+	"Indicate that the asynchronous update has completed"
+
+	updateQueued := false
+]
+
+{ #category : #'async processing' }
+BlAsyncElement >> flagUpdateQueued [
+	"Indicate that an asynchronous update is queued
+	(thus further updates shouldn't be queued until it is done."
+
+	updateQueued := true
+]
+
 { #category : #initialization }
 BlAsyncElement >> initialize [ 
 
 	super initialize.
-	self setDefaultErrorStencil
+	self setDefaultErrorStencil.
+	updateQueued := false.
 ]
 
 { #category : #accessing }
@@ -109,7 +127,7 @@ BlAsyncElement >> maxPoolSize [
 	^1
 ]
 
-{ #category : #'async processing' }
+{ #category : #testing }
 BlAsyncElement >> needsUpdate [
 	"Answer a boolean indicating whether the receiver needs to be updated (via an asynchronous task).
 	Typically this will be overridden by concrete subclasses to avoid unnecessary updates."
@@ -140,8 +158,8 @@ BlAsyncElement >> priority: anInteger [
 BlAsyncElement >> queueAsyncUpdate [
 	"Queue a task to update the receiver's state."
 
-	self needsUpdate ifFalse: [ ^self ].
-
+	(updateQueued or: [ self needsUpdate not ]) ifTrue: [ ^self ].
+	updateQueued := true.
 	BlAsyncUIWorkerPool schedule: self queueEntry maxPoolSize: self maxPoolSize.
 
 ]
@@ -172,6 +190,12 @@ BlAsyncElement >> taskitRunner [
 { #category : #accessing }
 BlAsyncElement >> taskitRunner: anObject [
 	taskitRunner := anObject
+]
+
+{ #category : #'async processing' }
+BlAsyncElement >> updateQueued [
+
+	^updateQueued 
 ]
 
 { #category : #accessing }

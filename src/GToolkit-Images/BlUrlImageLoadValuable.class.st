@@ -14,7 +14,7 @@ BlUrlImageLoadValuable class >> url: aZnUrl element: aBlElement [
 ]
 
 { #category : #private }
-BlUrlImageLoadValuable >> getNewForm [
+BlUrlImageLoadValuable >> getNewEntry [
 	"Retrieve the form for the url with an extent the same size or larger than the receiver"
 
 	^BlLocalImageCache current url: url size: self extent max

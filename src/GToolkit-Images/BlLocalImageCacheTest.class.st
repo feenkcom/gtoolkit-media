@@ -74,15 +74,18 @@ BlLocalImageCacheTest >> testCacheSizeFor [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize100 [
 
-	| cache cachedForm maxDimension |
+	| cache entry cachedForm maxDimension |
 
 	cache := self cache.
-	cachedForm := cache fileAt: self resource image1200 size: 100.
-	maxDimension := cachedForm width max: cachedForm height.
+	entry := cache fileAt: self resource image1200 size: 100.
+	cachedForm := entry form.
+	maxDimension := cachedForm extent max.
 	"The next largest size is 200"
 	self 
 		assert: maxDimension 
-		equals: 200
+		equals: 200.
+	self assert: entry isSmallest.
+	self deny: entry isOriginal.
 ]
 
 { #category : #tests }
@@ -91,8 +94,8 @@ BlLocalImageCacheTest >> testCachedSize200 [
 	| cache cachedForm maxDimension |
 
 	cache := self cache.
-	cachedForm := cache fileAt: self resource image1200 size: 200.
-	maxDimension := cachedForm width max: cachedForm height.
+	cachedForm := (cache fileAt: self resource image1200 size: 200) form.
+	maxDimension := cachedForm extent max.
 	"The next largest size is 200"
 	self 
 		assert: maxDimension 
@@ -102,79 +105,109 @@ BlLocalImageCacheTest >> testCachedSize200 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize2000 [
 
-	| cache cachedForm maxDimension |
+	| cache entry cachedForm maxDimension |
 
 	cache := self cache.
-	cachedForm := cache fileAt: self resource image1200 size: 2000.
-	maxDimension := cachedForm width max: cachedForm height.
+	entry := cache fileAt: self resource image1200 size: 2000.
+	cachedForm := entry form.
+	maxDimension := cachedForm extent max.
 	"This is larger than the original, we should get back the original"
 	self 
 		assert: maxDimension 
-		equals: 1200
+		equals: 1200.
+	self assert: entry isOriginal.
+	self deny: entry isSmallest.
+]
+
+{ #category : #tests }
+BlLocalImageCacheTest >> testCachedSize400 [
+
+	| cache entry cachedForm maxDimension |
+
+	cache := self cache.
+	entry := cache fileAt: self resource image400 size: 400.
+	cachedForm := entry form.
+	maxDimension := cachedForm extent max.
+	self 
+		assert: maxDimension 
+		equals: 400.
+	self assert: entry isOriginal.
+	self deny: entry isSmallest.
 ]
 
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize700 [
 
-	| cache cachedForm maxDimension |
+	| cache entry cachedForm maxDimension |
 
 	cache := self cache.
-	cachedForm := cache fileAt: self resource image1200 size: 700.
+	entry := cache fileAt: self resource image1200 size: 700.
+	cachedForm := entry form.
 	maxDimension := cachedForm width max: cachedForm height.
 	"The next largest size is 800"
 	self 
 		assert: maxDimension 
-		equals: 800
+		equals: 800.
+	self deny: entry isOriginal.
+	self deny: entry isSmallest.
 ]
 
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSizeNil [
 
-	| cache |
+	| cache entry |
 
 	cache := self cache.
-	"Comparing the form contents is heavy work, just check the size for now"
+	entry := cache fileAt: self resource image1200 size: nil.
 	self 
-		assert: (cache fileAt: self resource image1200 size: nil) bitsSize
-		equals: (ImageReadWriter gtFormFromFileReference: self resource image1200) bitsSize
+		assert: entry form bitsSize
+		equals: (ImageReadWriter gtFormFromFileReference: self resource image1200) bitsSize.
+	self assert: entry isOriginal.
+	self deny: entry isSmallest.
 ]
 
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedUrlSize100 [
 
-	| cache cachedForm |
+	| cache entry |
 
 	cache := self cache.
-	cachedForm := cache url: self resource image400 asZnUrl size: 100.
+	entry := cache url: self resource image400 asZnUrl size: 100.
 	"The next largest size is 200"
 	self 
-		assert: cachedForm extent max
-		equals: 200
+		assert: entry form extent max
+		equals: 200.
+	self assert: entry isSmallest.
+	self deny: entry isOriginal.
 ]
 
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedUrlSize400 [
 
-	| cache cachedForm |
+	| cache entry |
 
 	cache := self cache.
-	cachedForm := cache url: self resource image400 asZnUrl size: 400.
+	entry := cache url: self resource image400 asZnUrl size: 400.
 	self 
-		assert: cachedForm extent max
-		equals: 400
+		assert: entry form extent max
+		equals: 400.
+	self assert: entry isOriginal.
+	self deny: entry isSmallest.
 ]
 
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedUrlSize800 [
 
-	| cache cachedForm |
+	| cache entry |
 
 	cache := self cache.
-	cachedForm := cache url: self resource image400 asZnUrl size: 800.
+	entry := cache url: self resource image400 asZnUrl size: 800.
 	"800 is larger than the original, so we should get back the original"
 	self 
-		assert: cachedForm extent max
-		equals: 400
+		assert: entry form extent max
+		equals: 400.
+	self assert: entry isOriginal.
+	self deny: entry isSmallest.
 ]
 
 { #category : #tests }

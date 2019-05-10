@@ -41,7 +41,7 @@ BlFileImageLoadValuable class >> file: aFileReference element: aBlElement [
 ]
 
 { #category : #private }
-BlFileImageLoadValuable >> getNewForm [
+BlFileImageLoadValuable >> getNewEntry [
 	"Retrieve the form from the file with an extent the same size or larger than the receiver"
 
 	^BlLocalImageCache current fileAt: file size: self extent max

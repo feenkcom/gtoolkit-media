@@ -75,6 +75,16 @@ BlLocalImageCache class >> stopCurrent [
 ]
 
 { #category : #private }
+BlLocalImageCache >> answerForm: aForm size: aSize isOriginal: isOriginal [
+
+	^BlImageCacheEntry new
+		isSmallest: (aSize <= imageSizes first);
+		isOriginal: isOriginal;
+		form: aForm;
+		yourself
+]
+
+{ #category : #private }
 BlLocalImageCache >> cacheFileFor: aFileReference size: cacheSize [
 	"Answer the file name used to cache aFileReference at cacheSize"
 
@@ -90,17 +100,12 @@ BlLocalImageCache >> cacheFileFor: aFileReference size: cacheSize [
 { #category : #private }
 BlLocalImageCache >> cacheFileForUrl: znUrl size: cacheSize [
 
-	| fileReference hash signal |
+	| fileReference hash |
 
 	hash := (SHA256 new hashStream: znUrl asString readStream) hex.
 	fileReference := networkRoot / hash / (cacheSize
 		ifNil: [ 'original.image' ]
 		ifNotNil: [ cacheSize asString, '.jpg' ]).
-	signal := BlImageCacheSignal new 
-		event: #urlMap;
-		value: znUrl.
-	signal properties at: #hash put: hash.
-	signal emit.
 	^fileReference
 ]
 
@@ -126,9 +131,16 @@ BlLocalImageCache >> cacheRoot: aFileReference [
 BlLocalImageCache >> cacheSizeFor: minImageSize [
 	"Answer the cached image size just larger than minImageSize"
 
+	minImageSize ifNil: [ ^nil ].
 	^imageSizes detect: [ :size | minImageSize <= size ]
 							ifNone: [ nil ].
 	
+]
+
+{ #category : #manage }
+BlLocalImageCache >> clearStats [
+
+	hits := misses := 0.
 ]
 
 { #category : #private }
@@ -148,7 +160,7 @@ BlLocalImageCache >> defaultImageSizes [
 	^newImageSizes
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing - cache' }
 BlLocalImageCache >> fileAt: aFileReference size: minImageSize [
 	"Answer the Form for the specified file and requested size.
 	If minImageSize isNil, answer the form from the original file.
@@ -157,20 +169,23 @@ BlLocalImageCache >> fileAt: aFileReference size: minImageSize [
 	| fileReference cacheSize cacheFile form |
 
 	fileReference := aFileReference asFileReference.
-	minImageSize ifNil: [ ^self formFor: fileReference ].
 	cacheSize := self cacheSizeFor: minImageSize.
-	cacheSize ifNil: [ ^self formFor: fileReference ].
+	(minImageSize isNil or: [ cacheSize isNil ]) ifTrue: [ 
+		form := self formFor: fileReference.
+		^self answerForm: form size: form extent max isOriginal: true ].
 	cacheFile := self cacheFileFor: fileReference size: cacheSize.
 	cacheFile exists ifTrue: [ 
 		hits := hits + 1.
-		^self formFor: cacheFile ].
+		^self answerForm: (self formFor: cacheFile) size: cacheSize isOriginal: false ].
 	form := self formFor: fileReference.
+	cacheSize >= form extent max ifTrue: 
+		[ ^self answerForm: form size: form extent max isOriginal: true ].
 	form := form scaledToSize: cacheSize@cacheSize.
 	cacheFile parent ensureCreateDirectory.
 	PluginBasedJPEGReadWriter putForm: form onFileNamed: cacheFile.
 	housekeeper add: cacheFile.
 	misses := misses + 1.
-	^form.
+	^self answerForm: form size: cacheSize isOriginal: false.
 
 ]
 
@@ -188,6 +203,7 @@ BlLocalImageCache >> flush [
 	fileRoot ensureDeleteAllChildren.
 	networkRoot ensureDeleteAllChildren.
 	housekeeper updateCurrentSize.
+	self clearStats.
 ]
 
 { #category : #private }
@@ -302,13 +318,13 @@ BlLocalImageCache >> taskitRunner: anObject [
 	taskitRunner := anObject
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing - cache' }
 BlLocalImageCache >> url: aUrl size: minImageSize [
 	"Answer the Form for the specified URL and requested size.
 	If minImageSize isNil, answer the form from the original file.
 	Otherwise answer the cached image which is larger than minImageSize."
 
-	| znUrl content fileReference cacheSize cacheFile form |
+	| znUrl content fileReference cacheSize cacheFile form originalSize |
 
 	znUrl := aUrl asZnUrl.
 	"If the appropriate cache entry already exists, just return it.
@@ -318,7 +334,7 @@ BlLocalImageCache >> url: aUrl size: minImageSize [
 		cacheFile := self cacheFileForUrl: znUrl size: cacheSize.
 		cacheFile exists ifTrue: [ 
 			hits := hits + 1.
-			^self formFor: cacheFile ] ].
+			^self answerForm: (self formFor: cacheFile) size: cacheSize isOriginal: false ] ].
 
 	"The cache file doesn't exist or the original has been requested"
 	"Ensure we have the original saved to file and its form loaded"
@@ -338,11 +354,12 @@ BlLocalImageCache >> url: aUrl size: minImageSize [
 		form := ImageReadWriter formFromStream: content readStream ]
 	ifTrue:
 		[ form := self formFor: fileReference ].
+	originalSize := form extent max.
 
-	minImageSize ifNil: [ ^self formFor: fileReference ].
+	minImageSize ifNil: [ ^self answerForm: form size: originalSize isOriginal: true ].
 
 	"If the requested cache size is larger than the original, just return the original"
-	cacheSize >  form extent max ifTrue: [ ^form ].
+	cacheSize >= form extent max ifTrue: [ ^self answerForm: form size: originalSize isOriginal: true ].
 
 	"Answer the form scaled to cacheSize"
 	form := form scaledToSize: cacheSize@cacheSize.
@@ -350,6 +367,6 @@ BlLocalImageCache >> url: aUrl size: minImageSize [
 	PluginBasedJPEGReadWriter putForm: form onFileNamed: cacheFile.
 	housekeeper add: cacheFile.
 	misses := misses + 1.
-	^form.
+	^self answerForm: form size: cacheSize isOriginal: false.
 
 ]
