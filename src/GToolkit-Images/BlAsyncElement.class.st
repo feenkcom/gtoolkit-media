@@ -83,7 +83,14 @@ BlAsyncElement >> asyncException: anException [
 	self enqueueTask: (BlTaskAction new action: [ 
 		asyncException 
 			ifNil: [ self removeChildren ]
-			ifNotNil: [ self addChild: (self errorStencil arguments: { asyncException }) create ] ] )
+			ifNotNil: [ | exceptionElement |
+				exceptionElement := (self errorStencil arguments: { asyncException }) create.
+				exceptionElement constraintsDo: [ :c | 
+					c horizontal fitContent.
+					c vertical fitContent.
+					c frame vertical alignCenter.
+					c frame horizontal alignCenter ].
+				self addChild: exceptionElement ] ] )
 ]
 
 { #category : #accessing }
@@ -176,7 +183,8 @@ BlAsyncElement >> setDefaultErrorStencil [
 
 	self errorStencil: [ :exception |
 		BrButton new
-			look: BrGlamorousButtonWithIconLook;
+			label: 'Inspect Error' translated asRopedText;
+			look: BrGlamorousButtonWithLabelAndIconLook;
 			icon: BrGlamorousIcons alarm asElement;
 			action: [ exception inspect ] ]
 ]
