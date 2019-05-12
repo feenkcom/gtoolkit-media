@@ -44,6 +44,13 @@ BlImageCacheHousekeeper >> currentSize [
 	^currentSize
 ]
 
+{ #category : #accessing }
+BlImageCacheHousekeeper >> emergencySize [
+	"Answer the size in bytes at which the calling process will be used to prune the cache"
+
+	^emergencySize 
+]
+
 { #category : #initialization }
 BlImageCacheHousekeeper >> initialize [ 
 

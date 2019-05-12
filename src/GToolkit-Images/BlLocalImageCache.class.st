@@ -143,6 +143,13 @@ BlLocalImageCache >> clearStats [
 	hits := misses := 0.
 ]
 
+{ #category : #accessing }
+BlLocalImageCache >> currentSize [ 
+	"Answer the approximate size of the receiver"
+
+	^housekeeper currentSize
+]
+
 { #category : #private }
 BlLocalImageCache >> defaultImageSizes [
 	"Answer the default cache sizes to use, i.e.
@@ -158,6 +165,13 @@ BlLocalImageCache >> defaultImageSizes [
 		at: 2 put: (newSize // 2);
 		at: 3 put: newSize.
 	^newImageSizes
+]
+
+{ #category : #private }
+BlLocalImageCache >> emergencySize [
+	"Answer the emergency size at which the cache will be pruned by calling process"
+
+	^housekeeper emergencySize
 ]
 
 { #category : #'accessing - cache' }
@@ -232,11 +246,48 @@ BlLocalImageCache >> getBufferFor: aFileReference [
 	^buffer
 ]
 
+{ #category : #inspecting }
+BlLocalImageCache >> gtStatusFor: aView [
+	<gtView>
+	| aList |
+
+	aList := aView columnedList 
+		title: 'Status' translated;
+		priority: 50;
+		items: [ { 
+			'Current Size (approx.)' -> self currentSize humanReadableSIByteSize.
+			'Max Cache Size' -> maxCacheSize humanReadableSIByteSize.
+			'Target Size' -> self targetSize humanReadableSIByteSize.
+			'Emergency Size' -> self emergencySize humanReadableSIByteSize.
+			'Hits' -> self hits asString.
+			'Misses' -> self misses asString.
+			'Total Accesses' -> self totalAccesses asString.
+			'Hit Rate' -> ((self hitRate * 100) rounded asString, '%').
+			 } ].
+
+	aList column 
+		title: 'Parameter' translated;
+		width: 150;
+		item: [ :eachItem :eachIndex | eachItem key ].
+
+	aList column 
+		title: 'Value' translated;
+		width: 70;
+		item: [ :eachItem :eachIndex | eachItem value ].
+
+	^aList
+]
+
 { #category : #accessing }
 BlLocalImageCache >> hitRate [
 	"Answer the receiver's hit rate"
 
-	^hits / (hits + misses)
+	| totalAccesses |
+
+	totalAccesses := self totalAccesses.
+	^totalAccesses = 0
+		ifTrue: [ 0 ]
+		ifFalse: [ hits asFloat / totalAccesses asFloat ]
 ]
 
 { #category : #accessing }
@@ -307,6 +358,13 @@ BlLocalImageCache >> setDefaultLocation [
 
 ]
 
+{ #category : #private }
+BlLocalImageCache >> targetSize [
+	"Answer the target size when pruning the cache"
+
+	^housekeeper targetSize
+]
+
 { #category : #accessing }
 BlLocalImageCache >> taskitRunner [
 
@@ -316,6 +374,12 @@ BlLocalImageCache >> taskitRunner [
 { #category : #accessing }
 BlLocalImageCache >> taskitRunner: anObject [
 	taskitRunner := anObject
+]
+
+{ #category : #accessing }
+BlLocalImageCache >> totalAccesses [
+
+	^hits + misses
 ]
 
 { #category : #'accessing - cache' }
