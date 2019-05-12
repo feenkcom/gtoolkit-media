@@ -16,11 +16,14 @@ Public API and Key Messages
 Internal Representation and Key Implementation Points.
 
     Instance Variables
-	cacheRoot:		<Object>
-	fileRoot:		<Object>
-	imageSizes:		<Object>
-	maxCacheSize:		<Object>
-	networkRoot:		<Object>
+	cacheRoot:		<FileReference>
+	fileRoot:		<FileReference>
+	imageSizes:		<Array>
+	maxCacheSize:		<Integer>  The maximum size of the cache in bytes.  The actual size may grow somewhat larger than specified in a busy system.
+	networkRoot:		<FileReference>
+	housekeeper:		<BlImageCacheHousekeeper>
+	hits:								<Integer>
+	misses:						<Integer>
 
 
 !!!Implementation Points
@@ -36,6 +39,8 @@ So we want the cache structure to allow lookup to be determined on the basis of 
 	fileRoot / <path to image> / <image file name> / <cache entry name>.jpg
 
 The directory containing the cache entries can then easily be tested for existence.
+
+To maximise the cache speed, no attempt is made to the cache thread safe.  The side affect is that the cache sizes are approximate and that the cache may actually grow larger than the specified constraints in a busy system.
 "
 Class {
 	#name : #BlLocalImageCache,

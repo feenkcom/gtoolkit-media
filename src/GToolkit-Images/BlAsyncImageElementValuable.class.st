@@ -1,8 +1,20 @@
+"
+BlAsyncImageElementValuable is an abstract class that adds general functionality for loading images asynchronously and updating the element.
+
+${method:name=BlAsyncImageElementValuable>>#getNewEntry}$ should be overridden by subclases to do the actual work of loading the image.
+
+Subclasses are also responsible for creating instance creation methods with the appropriate information.
+
+!!Internal Representation and Key Implementation Points.
+!!!Instance Variables
+	entry:		<BlImageCacheEntry> The cache 
+
+!!Implementation Points
+"
 Class {
 	#name : #BlAsyncImageElementValuable,
 	#superclass : #BlAsyncElementValuable,
 	#instVars : [
-		'form',
 		'entry'
 	],
 	#category : #'GToolkit-Images-TaskIt'
