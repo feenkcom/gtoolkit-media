@@ -1,3 +1,7 @@
+"
+BlUrlImageLoadValuable is responsible for loading a single image at the supplied URL.  This is done by passing the request on to ${method:name=BlLocalImageCache class>>#current}$.  
+
+"
 Class {
 	#name : #BlUrlImageLoadValuable,
 	#superclass : #BlAsyncImageElementValuable,
@@ -14,7 +18,7 @@ BlUrlImageLoadValuable class >> url: aZnUrl element: aBlElement [
 ]
 
 { #category : #private }
-BlUrlImageLoadValuable >> getNewForm [
+BlUrlImageLoadValuable >> getNewEntry [
 	"Retrieve the form for the url with an extent the same size or larger than the receiver"
 
 	^BlLocalImageCache current url: url size: self extent max

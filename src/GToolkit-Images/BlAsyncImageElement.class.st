@@ -25,7 +25,7 @@ Class {
 	#name : #BlAsyncImageElement,
 	#superclass : #BlAsyncElement,
 	#instVars : [
-		'form',
+		'entry',
 		'bitmap'
 	],
 	#category : #'GToolkit-Images-Elements'
@@ -34,16 +34,17 @@ Class {
 { #category : #initialization }
 BlAsyncImageElement >> clearForm [
 
-	form := bitmap := nil.
+	entry := bitmap := nil.
 ]
 
 { #category : #drawing }
 BlAsyncImageElement >> drawOnSpartaCanvas: aCanvas [
 
-	| ratio imageExtent translation |
+	| ratio imageExtent translation form |
 
 	super drawOnSpartaCanvas: aCanvas.
-	form ifNil: [ ^self ].
+	entry ifNil: [ ^self ].
+	form := entry form.
 
 	bitmap ifNil: [ bitmap := aCanvas bitmap fromForm: form ].
 	
@@ -67,35 +68,40 @@ BlAsyncImageElement >> drawOnSpartaCanvas: aCanvas [
 ]
 
 { #category : #accessing }
-BlAsyncImageElement >> form [
-	^ form
-]
-
-{ #category : #accessing }
-BlAsyncImageElement >> form: aForm [
+BlAsyncImageElement >> entry: aBlImageCacheEntry [
 	"Set the receiver's form.
 	This can be called from a background process, thus ensure the invalidation is done in the UI process"
 
-	form := aForm.
+	entry := aBlImageCacheEntry.
+	updateQueued := false.
 	bitmap := nil.
-	form ifNotNil: [ self enqueueTask: (BlTaskAction new action: [ self invalidate ]) ]
+	entry ifNotNil: [ self enqueueTask: (BlTaskAction new action: [ self invalidate ]) ]
 
 ]
 
 { #category : #accessing }
+BlAsyncImageElement >> form [
+	^entry form
+]
+
+{ #category : #testing }
 BlAsyncImageElement >> needsUpdate [
 	"Answer a boolean indicating whether the current form is too small or too large"
 
-	| currentExtent formSize currentSize |
+	| currentExtent formSize currentSize ratio |
 
 	super needsUpdate ifFalse: [ ^false ].
+	entry ifNil: [ ^true ].
 	currentExtent := self extent.
 	currentExtent = (0@0) ifTrue: [ ^false ].
-	formSize := form
-		ifNil: [ 1 ]
-		ifNotNil: [ form width * form height ].
-	currentSize := currentExtent x * currentExtent y.
-	^((currentSize / formSize) between: 0.5 and: 2) not
+	formSize := (entry form width * entry form height) asFloat.
+	currentSize := (currentExtent x * currentExtent y) asFloat.
+	ratio := currentSize / formSize.
+	"The form needs to be reloaded if:
+	- The current size is significantly smaller than the form and the form isn't the smallest available, OR
+	- The current size is significantly larger than the form and the form isn't the original"
+	^(ratio < 0.5 and: [ entry isSmallest not ]) or:
+		[ ratio > 2 and: [ entry isOriginal not ] ]
 
 ]
 

@@ -19,3 +19,9 @@ Class {
 	#superclass : #Object,
 	#category : #'GToolkit-Images-Cache'
 }
+
+{ #category : #private }
+BlImageCache >> answerForm: aForm size: aSize isOriginal: isOriginal [
+
+	^self subclassResponsibility
+]
