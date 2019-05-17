@@ -36,5 +36,7 @@ BlWorkerImageCache >> fileAt: aFileReference size: minImageSize for: anObject [
 	cacheFile := (BlTlpWorkerPool current workerEvaluate: [ BlLocalImageCache current ensureCacheFileForFile: aFileReference size: minImageSize ]).
 	^cacheFile
 		ifNotNil: [ self set: anObject form: (self formFor: cacheFile) size: cacheSize isOriginal: false ]
-		ifNil: [ self error: 'Cache inconsistency' ]
+		ifNil: [ 
+			form := self formFor: fileReference.
+			self set: anObject form: form size: form extent max isOriginal: true ]
 ]
