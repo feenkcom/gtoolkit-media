@@ -68,6 +68,12 @@ BlAsyncImageElement >> drawOnSpartaCanvas: aCanvas [
 ]
 
 { #category : #accessing }
+BlAsyncImageElement >> entry [ 
+
+	^entry
+]
+
+{ #category : #accessing }
 BlAsyncImageElement >> entry: aBlImageCacheEntry [
 	"Set the receiver's form.
 	This can be called from a background process, thus ensure the invalidation is done in the UI process"
@@ -100,8 +106,8 @@ BlAsyncImageElement >> needsUpdate [
 	"The form needs to be reloaded if:
 	- The current size is significantly smaller than the form and the form isn't the smallest available, OR
 	- The current size is significantly larger than the form and the form isn't the original"
-	^(ratio < 0.5 and: [ entry isSmallest not ]) or:
-		[ ratio > 2 and: [ entry isOriginal not ] ]
+	^(ratio < 0.25 and: [ entry isSmallest not ]) or:
+		[ ratio > 4 and: [ entry isOriginal not ] ]
 
 ]
 

@@ -4,7 +4,7 @@ BlUrlImageLoadValuable is responsible for loading a single image at the supplied
 "
 Class {
 	#name : #BlUrlImageLoadValuable,
-	#superclass : #BlAsyncImageElementValuable,
+	#superclass : #BlAsyncElementValuable,
 	#instVars : [
 		'url'
 	],
@@ -17,18 +17,18 @@ BlUrlImageLoadValuable class >> url: aZnUrl element: aBlElement [
 	^self new initializeUrl: aZnUrl element: aBlElement
 ]
 
-{ #category : #private }
-BlUrlImageLoadValuable >> getNewEntry [
-	"Retrieve the form for the url with an extent the same size or larger than the receiver"
-
-	^BlLocalImageCache current url: url size: self extent max
-
-]
-
 { #category : #initialization }
 BlUrlImageLoadValuable >> initializeUrl: aZnUrl element: aBlElement [
 
 	self initialize.
 	url := aZnUrl asZnUrl.
 	element := aBlElement
+]
+
+{ #category : #private }
+BlUrlImageLoadValuable >> updateElement [
+	"Ask the cache to update the receiver's element"
+
+	^BlWorkerImageCache current url: url size: self extent max for: element
+
 ]

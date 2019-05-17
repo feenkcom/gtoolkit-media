@@ -57,3 +57,8 @@ BlImageCacheEntry >> isSmallest [
 BlImageCacheEntry >> isSmallest: anObject [
 	isSmallest := anObject
 ]
+
+{ #category : #accessing }
+BlImageCacheEntry >> seamlessDefaultTransferStrategy [
+	^SeamlessTransferStrategy defaultByValue
+]
