@@ -12,3 +12,8 @@ Class {
 	#superclass : #PackageManifest,
 	#category : #'GToolkit-Images-Manifest'
 }
+
+{ #category : #'code-critics' }
+ManifestGToolkitImages class >> ruleRBRefersToClassRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#BlLocalImageCache #fileAt:size:for: #false)) #'2019-05-17T07:15:20.731634+02:00') )
+]

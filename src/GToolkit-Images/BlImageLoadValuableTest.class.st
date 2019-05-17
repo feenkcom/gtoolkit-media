@@ -26,7 +26,8 @@ BlImageLoadValuableTest >> testValue [
 	BlLocalImageCache current housekeeper updateCurrentSize.
 
 	valuable := BlFileImageLoadValuable file: resources f1 element: element.
-	entry := valuable getNewEntry.
+	valuable updateElement.
+	entry := element entry.
 
 	"Restore normal threaded operation of the cache"
 	BlLocalImageCache current taskitRunner: TKTLocalProcessTaskRunner new.

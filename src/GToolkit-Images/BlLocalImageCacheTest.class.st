@@ -74,10 +74,12 @@ BlLocalImageCacheTest >> testCacheSizeFor [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize100 [
 
-	| cache entry cachedForm maxDimension |
+	| cache entry cachedForm maxDimension element |
 
 	cache := self cache.
-	entry := cache fileAt: self resource image1200 size: 100.
+	element := BlLocalImageCacheTestEntry new.
+	cache fileAt: self resource image1200 size: 100 for: element.
+	entry := element entry.
 	cachedForm := entry form.
 	maxDimension := cachedForm extent max.
 	"The next largest size is 200"
@@ -91,10 +93,12 @@ BlLocalImageCacheTest >> testCachedSize100 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize200 [
 
-	| cache cachedForm maxDimension |
+	| cache cachedForm maxDimension element |
 
 	cache := self cache.
-	cachedForm := (cache fileAt: self resource image1200 size: 200) form.
+	element := BlLocalImageCacheTestEntry new.
+	cache fileAt: self resource image1200 size: 200 for: element.
+	cachedForm := element entry form.
 	maxDimension := cachedForm extent max.
 	"The next largest size is 200"
 	self 
@@ -105,10 +109,12 @@ BlLocalImageCacheTest >> testCachedSize200 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize2000 [
 
-	| cache entry cachedForm maxDimension |
+	| cache entry cachedForm maxDimension element |
 
 	cache := self cache.
-	entry := cache fileAt: self resource image1200 size: 2000.
+	element := BlLocalImageCacheTestEntry new.
+	cache fileAt: self resource image1200 size: 2000 for: element.
+	entry := element entry.
 	cachedForm := entry form.
 	maxDimension := cachedForm extent max.
 	"This is larger than the original, we should get back the original"
@@ -122,10 +128,12 @@ BlLocalImageCacheTest >> testCachedSize2000 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize400 [
 
-	| cache entry cachedForm maxDimension |
+	| cache entry cachedForm maxDimension element |
 
 	cache := self cache.
-	entry := cache fileAt: self resource image400 size: 400.
+	element := BlLocalImageCacheTestEntry new.
+	cache fileAt: self resource image400 size: 400 for: element.
+	entry := element entry.
 	cachedForm := entry form.
 	maxDimension := cachedForm extent max.
 	self 
@@ -138,10 +146,12 @@ BlLocalImageCacheTest >> testCachedSize400 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSize700 [
 
-	| cache entry cachedForm maxDimension |
+	| cache entry cachedForm maxDimension element |
 
 	cache := self cache.
-	entry := cache fileAt: self resource image1200 size: 700.
+	element := BlLocalImageCacheTestEntry new.
+	cache fileAt: self resource image1200 size: 700 for: element.
+	entry := element entry.
 	cachedForm := entry form.
 	maxDimension := cachedForm width max: cachedForm height.
 	"The next largest size is 800"
@@ -155,10 +165,12 @@ BlLocalImageCacheTest >> testCachedSize700 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedSizeNil [
 
-	| cache entry |
+	| cache entry element |
 
 	cache := self cache.
-	entry := cache fileAt: self resource image1200 size: nil.
+	element := BlLocalImageCacheTestEntry new.
+	cache fileAt: self resource image1200 size: nil for: element.
+	entry := element entry.
 	self 
 		assert: entry form bitsSize
 		equals: (ImageReadWriter gtFormFromFileReference: self resource image1200) bitsSize.
@@ -169,10 +181,12 @@ BlLocalImageCacheTest >> testCachedSizeNil [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedUrlSize100 [
 
-	| cache entry |
+	| cache element entry |
 
 	cache := self cache.
-	entry := cache url: self resource image400 asZnUrl size: 100.
+	element := BlLocalImageCacheTestEntry new.
+	cache url: self resource image400 asZnUrl size: 100 for: element.
+	entry := element entry.
 	"The next largest size is 200"
 	self 
 		assert: entry form extent max
@@ -184,10 +198,12 @@ BlLocalImageCacheTest >> testCachedUrlSize100 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedUrlSize400 [
 
-	| cache entry |
+	| cache element entry |
 
 	cache := self cache.
-	entry := cache url: self resource image400 asZnUrl size: 400.
+	element := BlLocalImageCacheTestEntry new.
+	cache url: self resource image400 asZnUrl size: 400 for: element.
+	entry := element entry.
 	self 
 		assert: entry form extent max
 		equals: 400.
@@ -198,10 +214,12 @@ BlLocalImageCacheTest >> testCachedUrlSize400 [
 { #category : #tests }
 BlLocalImageCacheTest >> testCachedUrlSize800 [
 
-	| cache entry |
+	| cache element entry |
 
 	cache := self cache.
-	entry := cache url: self resource image400 asZnUrl size: 800.
+	element := BlLocalImageCacheTestEntry new.
+	cache url: self resource image400 asZnUrl size: 800 for: element.
+	entry := element entry.
 	"800 is larger than the original, so we should get back the original"
 	self 
 		assert: entry form extent max
@@ -223,13 +241,14 @@ BlLocalImageCacheTest >> testDeafultImageSizes [
 { #category : #tests }
 BlLocalImageCacheTest >> testFlush [
 
-	| cache |
+	| cache element |
 
 	cache := self cache.
+	element := BlLocalImageCacheTestEntry new.
 	cache flush.
-	cache fileAt: self resource image1200 size: 100.
-	cache fileAt: self resource image1200 size: 300.
-	cache fileAt: self resource image1200 size: 700.
+	cache fileAt: self resource image1200 size: 100 for: element.
+	cache fileAt: self resource image1200 size: 300 for: element.
+	cache fileAt: self resource image1200 size: 700 for: element.
 
 	self 
 		assert: (self resource cacheRoot allChildren select: [ :each | each basename endsWith: 'jpg' ]) size
