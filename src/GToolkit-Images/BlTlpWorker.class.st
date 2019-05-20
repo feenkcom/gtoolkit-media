@@ -76,14 +76,20 @@ BlTlpWorker >> start [
 			retry := retry + 1.
 			retry <= 10 ifTrue: [
 				500 milliSeconds wait.
-				ex retry ] ].
+				ex retry ]
+			ifFalse:
+				[ ex signal ] ].
 
 ]
 
 { #category : #running }
 BlTlpWorker >> stop [
 
-	remote quit.
-	100 milliSeconds wait.
-	process terminate.
+	remote ifNotNil: [ 
+		remote quit.
+		remote := nil.
+		100 milliSeconds wait. ].
+	process ifNotNil: [ 
+		process terminate.
+		process := nil ].
 ]
