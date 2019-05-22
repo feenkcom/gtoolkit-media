@@ -48,6 +48,25 @@ BlTlpWorker >> initialize [
 	vm := SmalltalkImage current vmBinary.
 ]
 
+{ #category : #printing }
+BlTlpWorker >> printOn: aStream [
+
+	| attributes |
+
+	super printOn: aStream.
+	attributes := Array streamContents: [ :attrs |
+		(process isNil and: [remote isNil]) ifTrue: 
+			[ attrs nextPut: 'idle' ].
+		process ifNotNil: [ 
+			attrs nextPut: 'pid=', process pid printString ].
+		remote ifNotNil: [ 
+			attrs nextPut: 'port=', remote remotePeer address port printString ] ].
+	aStream 
+		<< '(';
+		<< (', ' join: attributes);
+		<< ')'.
+]
+
 { #category : #running }
 BlTlpWorker >> start [
 	"Get a free port and fork the worker"

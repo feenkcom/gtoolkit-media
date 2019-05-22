@@ -78,6 +78,7 @@ BlAsyncElement >> asyncException: anException [
 	"Set the exception raised while trying to asynchronously process the receiver's content.
 	This can be called from a background process, so ensure element updates occur in the UI process"
 
+	anException freeze.
 	asyncException := anException.
 	updateQueued := false.
 	self enqueueTask: (BlTaskAction new action: [ 
@@ -183,10 +184,10 @@ BlAsyncElement >> setDefaultErrorStencil [
 
 	self errorStencil: [ :exception |
 		BrButton new
-			label: 'Inspect Error' translated asRopedText;
+			label: 'Debug' translated asRopedText;
 			look: BrGlamorousButtonWithLabelAndIconLook;
 			icon: BrGlamorousIcons alarm asElement;
-			action: [ exception inspect ] ]
+			action: [ [ exception defaultAction ] fork ] ]
 ]
 
 { #category : #accessing }
