@@ -31,7 +31,7 @@ Class {
 		'process',
 		'remote'
 	],
-	#category : #'GToolkit-Images-TelePharo'
+	#category : #'GToolkit-IPC'
 }
 
 { #category : #'public access' }

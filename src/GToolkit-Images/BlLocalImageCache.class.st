@@ -65,7 +65,17 @@ Class {
 { #category : #accessing }
 BlLocalImageCache class >> current [ 
 
-	^Current ifNil: [ 	Current := self new setDefaultLocation  ]
+	^Current ifNil: [ 	Current := self default setDefaultLocation ]
+]
+
+{ #category : #accessing }
+BlLocalImageCache class >> default [ 
+	"Answer the default instance to use.
+	If worker images are available, they will be used, otherwise everything will be done in-image"
+
+	^(Smalltalk hasClassNamed: #BlTlpWorkerPool)
+		ifTrue: [ BlWorkerImageCache new ]
+		ifFalse: [ BlLocalImageCache new ]
 ]
 
 { #category : #managing }
