@@ -34,7 +34,7 @@ Class {
 	#classVars : [
 		'Current'
 	],
-	#category : #'GToolkit-Images-TelePharo'
+	#category : #'GToolkit-IPC'
 }
 
 { #category : #accessing }
