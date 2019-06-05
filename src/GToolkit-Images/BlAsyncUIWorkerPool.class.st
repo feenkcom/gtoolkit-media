@@ -15,6 +15,15 @@ Class {
 	#category : #'GToolkit-Images-TaskIt'
 }
 
+{ #category : #scheduling }
+BlAsyncUIWorkerPool class >> future: aValuable maxPoolSize: maxPoolSize [
+	"Schedule the supplied valuable with maxPoolSize worker pools"
+
+	^TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
+		(self withPoolSize: maxPoolSize) future: aValuable ].
+
+]
+
 { #category : #'class initialization' }
 BlAsyncUIWorkerPool class >> initialize [ 
 	<script>
@@ -28,7 +37,7 @@ BlAsyncUIWorkerPool class >> initialize [
 BlAsyncUIWorkerPool class >> schedule: aValuable maxPoolSize: maxPoolSize [
 	"Schedule the supplied valuable with maxPoolSize worker pools"
 
-	TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
+	^TKTConfiguration processProvider: BlTKTBackgroundProcessProvider new during: [ 
 		(self withPoolSize: maxPoolSize) schedule: aValuable ].
 
 ]
