@@ -1,11 +1,11 @@
 "
 BlAsyncImageElement is an abstract class that provides a framework for Bloc elements that display an image that should be loaded in a background processes (to leave the UI responsive).
 
-Each subclass BlAsyncImageElement requires a matching ${class:name=BlAsyncImageElementValuable}$ that is responsible for doing the work of retrieving the ${class:name=Form}$ and updating the receiver.
+Each subclass BlAsyncImageElement requires a matching ${class:name=BlAsyncElementValuable}$ that is responsible for doing the work of retrieving the ${class:name=Form}$ and updating the receiver.
 
 BlAsyncImageElement minimises memory and CPU usage by ensuring that the ${class:name=Form}$ held in memory is approximately the same size as the on-screen display size.  This ensures that memory is not wasted in the case where the form is much larger than the on-screen area, and that image quality is not compromised in the case where the form is much smaller than the on-screen display size.  See ${method:name=BlAsyncImageElement>>#needsUpdate}$.
 
-Subclasses of BlAsyncImageElement are responsible for holding the details of how to retrieve the image and answering their valuable, see ${method:name=BlAsyncImageElement>>#queueEntry}$ and  ${method:name=BlAsyncImageElementValuable>>#getNewForm}$.
+Subclasses of BlAsyncImageElement are responsible for holding the details of how to retrieve the image and answering their valuable, see ${method:name=BlAsyncImageElement>>#queueEntry}$ and  ${method:name=BlAsyncElementValuable>>#updateElement}$.
 
 !!Public API and Key Messages
 
