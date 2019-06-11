@@ -26,6 +26,13 @@ Class {
 }
 
 { #category : #converting }
+BlAsyncElementValuable >> asLoggingTask [ 
+	"Answer the receiver as a task that will log its execution"
+
+	^BlLoggingTask new valuable: self
+]
+
+{ #category : #converting }
 BlAsyncElementValuable >> asTask [ 
 
 	^TKTTask valuable: self
