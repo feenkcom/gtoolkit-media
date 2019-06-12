@@ -97,9 +97,9 @@ BlAsyncImageElement >> needsUpdate [
 	| currentExtent formSize currentSize ratio |
 
 	super needsUpdate ifFalse: [ ^false ].
-	entry ifNil: [ ^true ].
 	currentExtent := self extent.
-	currentExtent = (0@0) ifTrue: [ ^false ].
+	(currentExtent isNil or: [ currentExtent = (0@0) ]) ifTrue: [ ^false ].
+	entry ifNil: [ ^true ].
 	formSize := (entry form width * entry form height) asFloat.
 	currentSize := (currentExtent x * currentExtent y) asFloat.
 	ratio := currentSize / formSize.
