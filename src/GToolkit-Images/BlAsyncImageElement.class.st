@@ -81,7 +81,10 @@ BlAsyncImageElement >> entry: aBlImageCacheEntry [
 	entry := aBlImageCacheEntry.
 	updateQueued := false.
 	bitmap := nil.
-	entry ifNotNil: [ self enqueueTask: (BlTaskAction new action: [ self invalidate ]) ]
+	entry ifNotNil: [ self enqueueTask: (BlTaskAction new action: [ 
+			self 
+				removeChildren;
+				invalidate ]) ]
 
 ]
 
@@ -117,4 +120,13 @@ BlAsyncImageElement >> queueEntry [
 
 	^self subclassResponsibility
 
+]
+
+{ #category : #private }
+BlAsyncImageElement >> setDisplayRendering [
+	"Set the rendering element as a child of the receiver if the form has not already been supplied.
+	This method must be evaluated within the UI process"
+
+	entry ifNotNil: [ ^self ].
+	super setDisplayRendering
 ]

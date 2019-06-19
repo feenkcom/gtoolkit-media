@@ -94,6 +94,13 @@ BlAsyncElement >> asyncException: anException [
 				self addChild: exceptionElement ] ] )
 ]
 
+{ #category : #presentation }
+BlAsyncElement >> displayRendering [
+	"Display the Rendering message while background processing performed"
+
+	self enqueueTask: (BlTaskAction new action: [ self setDisplayRendering ])
+]
+
 { #category : #accessing }
 BlAsyncElement >> errorStencil [
 	^ errorStencil
@@ -180,6 +187,39 @@ BlAsyncElement >> queueEntry [
 ]
 
 { #category : #private }
+BlAsyncElement >> renderingElement [
+	"Answer an element that can be added as a child and displays the standard 'rendering' image"
+
+	| rendering element backgroundPaint container |
+
+	rendering := 'Rendering...' asRopedText 
+			foreground: Color gray lighter;
+			fontSize: 12.
+	element := (BlTextElement new 
+				text: rendering;
+				geometry: (BlRectangle cornerRadius: 7);
+				padding: (BlInsets top: 10 left: 20 bottom: 10 right: 20);
+				constraintsDo: [ :c | 
+					c frame horizontal alignCenter.
+					c frame vertical alignCenter ]).
+	backgroundPaint := BlLinearGradientPaint new
+						stops:
+							{(0.0 -> Color white ).
+							(0.25 -> Color white darker).
+							(1.0 -> Color white)};
+						start: 0@0;
+						end: 1@1.
+	element background: backgroundPaint.
+	container := BlElement new
+		layout: BlFrameLayout new;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
+		addChild: element.
+	^container
+]
+
+{ #category : #private }
 BlAsyncElement >> setDefaultErrorStencil [
 
 	self errorStencil: [ :exception |
@@ -188,6 +228,14 @@ BlAsyncElement >> setDefaultErrorStencil [
 			look: BrGlamorousButtonWithLabelAndIconLook;
 			icon: BrGlamorousIcons alarm asElement;
 			action: [ [ exception defaultAction ] fork ] ]
+]
+
+{ #category : #private }
+BlAsyncElement >> setDisplayRendering [
+	"Set the rendering element as a child of the receiver.
+	This method must be evaluated within the UI process"
+
+	self addChild: self renderingElement
 ]
 
 { #category : #accessing }
