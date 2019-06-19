@@ -8,9 +8,9 @@ Class {
 BaselineOfGToolkitIPC >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
-		spec configuration: 'OSProcess' with: [ 
+		spec baseline: 'OSProcess' with: [ 
 			spec
-				repository: 'http://www.squeaksource.com/MetacelloRepository' ].
+				repository: 'github://dtlewis290/OSProcess-Tonel/src' ].
 
 		spec baseline: 'TelePharo' with: [
 			spec
