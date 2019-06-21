@@ -89,6 +89,15 @@ BlLocalImageCache class >> stopCurrent [
 	Current := nil.
 ]
 
+{ #category : #managing }
+BlLocalImageCache class >> useLocalImageCache [
+	"Force the use of BlLocalImageCache"
+	<script>
+
+	self stopCurrent.
+	Current := BlLocalImageCache new setDefaultLocation.
+]
+
 { #category : #private }
 BlLocalImageCache >> answerForm: aForm size: aSize isOriginal: isOriginal [
 
