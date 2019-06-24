@@ -33,7 +33,7 @@ BlWorkerImageCache >> fileAt: aFileReference size: minImageSize for: anObject [
 
 	misses := misses + 1.
 	"Ask the worker to ensure that cache entry exists, then load it"
-	cacheFile := (BlTlpWorkerPool current workerEvaluate: [ BlLocalImageCache current ensureCacheFileForFile: aFileReference size: minImageSize ]).
+	cacheFile := (BlTlpWorkerPool current evaluate: [ BlLocalImageCache current ensureCacheFileForFile: aFileReference size: minImageSize ]).
 	^cacheFile
 		ifNotNil: [ self set: anObject form: (self formFor: cacheFile) size: cacheSize isOriginal: false ]
 		ifNil: [ 

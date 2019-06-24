@@ -77,6 +77,19 @@ BlTlpWorkerPool class >> shutdown [
 
 ]
 
+{ #category : #scheduling }
+BlTlpWorkerPool >> allWorkersEvaluate: aBlock [
+
+	1 to: workers size do: [ :i |
+		(self workerAt: i) evaluate: aBlock ]
+]
+
+{ #category : #scheduling }
+BlTlpWorkerPool >> evaluate: aBlock [
+
+	^self worker evaluate: aBlock
+]
+
 { #category : #initialization }
 BlTlpWorkerPool >> initialize [ 
 
@@ -121,8 +134,16 @@ BlTlpWorkerPool >> worker [
 	^worker
 ]
 
-{ #category : #scheduling }
-BlTlpWorkerPool >> workerEvaluate: aBlock [
+{ #category : #accessing }
+BlTlpWorkerPool >> workerAt: index [
+	"Answer the worker at index"
 
-	^self worker evaluate: aBlock
+	| worker |
+
+	monitor critical: 
+		[ worker := workers at: index.
+		worker ifNil: [ 
+			worker := workers at: index put: BlTlpWorker new.
+			worker start ] ].
+	^worker
 ]
