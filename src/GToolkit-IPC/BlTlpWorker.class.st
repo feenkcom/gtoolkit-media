@@ -29,15 +29,72 @@ Class {
 		'image',
 		'vm',
 		'process',
-		'remote'
+		'remote',
+		'port'
 	],
 	#category : #'GToolkit-IPC'
 }
+
+{ #category : #private }
+BlTlpWorker >> arguments [ 
+	"Answer the arguments used to run the worker"
+
+	^{ '--headless'.
+			image resolve pathString.
+			'remotePharo'.
+			'--startServerOnPort=', self port asString. }
+]
+
+{ #category : #private }
+BlTlpWorker >> command [
+	"Answer the command used to run the worker"
+
+	^vm resolve pathString
+]
+
+{ #category : #private }
+BlTlpWorker >> commandString [
+	"Convenience method, answer the equivalent shell command string for starting the worker"
+
+	^self command, ' ', (' ' join: self arguments)
+]
+
+{ #category : #private }
+BlTlpWorker >> connectToWorker [
+	"Open the TelePharo connection to the worker"
+
+	| retry |
+
+	retry := 0.
+	[ remote := TlpRemoteIDE connectTo: (TCPAddress ip: #[127 0 0 1] port: port) ]
+		on: ConnectionTimedOut 
+		do: [ :ex |
+			retry := retry + 1.
+			retry <= 10 ifTrue: [
+				500 milliSeconds wait.
+				ex retry ]
+			ifFalse:
+				[ ex signal ] ].
+
+]
 
 { #category : #'public access' }
 BlTlpWorker >> evaluate: aBlock [
 
 	^remote evaluate: aBlock
+]
+
+{ #category : #private }
+BlTlpWorker >> getFreePort [
+	"Answer a free port number to start the server on"
+
+	| socket |
+
+	socket := Socket new listenOn: 0.
+	port := socket localPort.
+	socket destroy.
+	100 milliSeconds wait.
+	^port
 ]
 
 { #category : #initialization }
@@ -46,6 +103,13 @@ BlTlpWorker >> initialize [
 	super initialize.
 	image := SmalltalkImage current imageFile.
 	vm := SmalltalkImage current vmBinary.
+]
+
+{ #category : #accessing }
+BlTlpWorker >> port [ 
+	"Answer the port used to run the worker"
+
+	^port ifNil: [ port := self getFreePort ]
 ]
 
 { #category : #printing }
@@ -71,33 +135,22 @@ BlTlpWorker >> printOn: aStream [
 BlTlpWorker >> start [
 	"Get a free port and fork the worker"
 
-	| socket port retry |
+	self startWorkerProcess.
+	self connectToWorker.
 
-	socket := Socket new listenOn: 0.
-	port := socket localPort.
-	socket destroy.
-	100 milliSeconds wait.
+]
+
+{ #category : #private }
+BlTlpWorker >> startWorkerProcess [
+	"Start the worker process"
 
 	process := OSProcess thisOSProcess 
-		forkAndExec: vm resolve pathString 
-		arguments: { '--headless'.
-			image resolve pathString.
-			'remotePharo'.
-			'--startServerOnPort=', port asString. } 
+		forkAndExec: self command 
+		arguments:  self arguments
 		environment: nil 
 		descriptors: nil.
 
 	300 milliSeconds wait.
-	retry := 0.
-	[ remote := TlpRemoteIDE connectTo: (TCPAddress ip: #[127 0 0 1] port: port) ]
-		on: ConnectionTimedOut 
-		do: [ :ex |
-			retry := retry + 1.
-			retry <= 10 ifTrue: [
-				500 milliSeconds wait.
-				ex retry ]
-			ifFalse:
-				[ ex signal ] ].
 
 ]
 
