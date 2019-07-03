@@ -78,3 +78,12 @@ SeamlessProxy >> gtViewsInContext: aContext [
 	For a SeamlessProxy we just want the Raw view renamed as 'Proxy'"
 	^ OrderedCollection with: (self gtProxyFor: GtPhlowEmptyView new)
 ]
+
+{ #category : #'*GToolkit-IPC' }
+SeamlessProxy >> gtdViewForSelector: aSelector [
+	"Answer an accessor for the view created by the given selector."
+	| view  declaration |
+	view := self gtdDeclarativeViewForSelector: aSelector.
+	declaration := GtDeclarativeView accessor: view.
+	^ declaration viewFor: GtPhlowEmptyView new
+]
