@@ -46,6 +46,17 @@ SeamlessProxy >> gtProxyFor: aView [
 ]
 
 { #category : #'*GToolkit-IPC' }
+SeamlessProxy >> gtProxyViewsFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Proxy views' translated;
+		priority: 10001;
+		items: [ 
+			self gtdViewTitlesAndPriorities ];
+		itemFormat: [ :aViewAccessor | aViewAccessor title ]
+]
+
+{ #category : #'*GToolkit-IPC' }
 SeamlessProxy >> gtViewsFor: aView [
 	"this is the default entry method for retrieving the wrapper view containing all views"
 	^ self gtViewsFor: aView inContext: nil
@@ -76,7 +87,9 @@ SeamlessProxy >> gtViewsFor: aView inContext: aContext [
 SeamlessProxy >> gtViewsInContext: aContext [
 	"This collects all views for the current object.
 	For a SeamlessProxy we just want the Raw view renamed as 'Proxy'"
-	^ OrderedCollection with: (self gtProxyFor: GtPhlowEmptyView new)
+	^ OrderedCollection 
+		with: (self gtProxyFor: GtPhlowEmptyView new)
+		with: (self gtProxyViewsFor: GtPhlowEmptyView new)
 ]
 
 { #category : #'*GToolkit-IPC' }
