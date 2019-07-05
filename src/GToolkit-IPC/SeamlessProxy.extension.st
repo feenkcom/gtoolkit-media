@@ -53,7 +53,8 @@ SeamlessProxy >> gtProxyViewsFor: aView [
 		priority: 10001;
 		items: [ 
 			self gtdViewTitlesAndPriorities ];
-		itemFormat: [ :aViewAccessor | aViewAccessor title ]
+		itemFormat: [ :aViewAccessor | aViewAccessor title ];
+		send: [ :aViewAccessor | GtDeclarativeView accessor: aViewAccessor ]
 ]
 
 { #category : #'*GToolkit-IPC' }
