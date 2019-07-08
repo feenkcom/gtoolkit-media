@@ -52,7 +52,7 @@ SeamlessProxy >> gtProxyViewsFor: aView [
 		title: 'Proxy views' translated;
 		priority: 10001;
 		items: [ 
-			self gtdViewTitlesAndPriorities ];
+			self gtDeclarativeViewAccessors ];
 		itemFormat: [ :aViewAccessor | aViewAccessor title ];
 		send: [ :aViewAccessor | GtDeclarativeView accessor: aViewAccessor ]
 ]
@@ -73,7 +73,7 @@ SeamlessProxy >> gtViewsFor: aView inContext: aContext [
 	views := resultingView originalView views.
 
 	"Add the explicitly declarative views from the inspected object"
-	views addAll: (self gtdViewTitlesAndPriorities collect: [ :each |
+	views addAll: (self gtDeclarativeViewAccessors collect: [ :each |
 		"Retrieve the JSON string declaration and instantiate the actual declarative view"
 		declaration := GtDeclarativeView accessor: each.
 		declaration viewFor: aView ]).
