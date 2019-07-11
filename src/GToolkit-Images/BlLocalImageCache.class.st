@@ -70,12 +70,15 @@ BlLocalImageCache class >> current [
 
 { #category : #accessing }
 BlLocalImageCache class >> default [ 
+	
+	^ BlLocalImageCache new
+
+
 	"Answer the default instance to use.
 	If worker images are available, they will be used, otherwise everything will be done in-image"
-
-	^(Smalltalk hasClassNamed: #BlTlpWorkerPool)
+"	^(Smalltalk hasClassNamed: #BlTlpWorkerPool)
 		ifTrue: [ BlWorkerImageCache new ]
-		ifFalse: [ BlLocalImageCache new ]
+		ifFalse: [ BlLocalImageCache new ]"
 ]
 
 { #category : #managing }
