@@ -10,43 +10,6 @@ WaitfreeQueue >> gtGraphFor: aView [
 ]
 
 { #category : #'*GToolkit-Images' }
-WaitfreeQueue >> gtItemsFor: aView [
-	<gtView> 
-	| aList |
-
-	aList := aView columnedList
-		title: 'Items' translated;
-		priority: 50;
-		items: [ self itemArray ].
-
-	aList column
-		title: 'Index' translated;
-		width: 30;
-		item: [ :eachItem :eachIndex | eachIndex asRopedText foreground: Color gray].
-	
-	aList column
-		title: 'Object' translated;
-		item: [ :eachItem :eachIndex | 
-			eachItem object == dummy ifTrue: [ '<Zombie>' ] ifFalse: [ eachItem object ] ];
-		itemFormat: [ :eachItem | eachItem asString ].
-	
-	^ aList
-]
-
-{ #category : #'*GToolkit-Images' }
-WaitfreeQueue >> itemArray [
-	"Answer an array of the receiver's items, excluding the dummy"
-
-	| item |
-
-	item := dummy.
-	^Array streamContents: [ :stream |
-		[ item := item next.
-		stream nextPut: item.
-		item isCircular ] whileFalse ].
-]
-
-{ #category : #'*GToolkit-Images' }
 WaitfreeQueue >> itemCount [
 	"Answer the number of items in the queue including dummies. 
 	If queue is currently in the middle of extraction by other process, give a (very) approximate answer.
