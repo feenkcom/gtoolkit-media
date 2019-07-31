@@ -6,7 +6,7 @@ TKTProfile class >> gtDevelopment [
 	^ TKTProfile
 		on:
 			{(#debugging -> true).
-			(#runner -> BlAsyncUIWorkerPool createDefault).
+			(#runner -> BlTktWorkerProvider highUICPUBoundPool).
 			(#poolWorkerProcess -> TKTDebuggWorkerProcess).
 			(#process -> TKTRawProcess).
 			(#errorHandler -> TKTDebuggerExceptionHandler).

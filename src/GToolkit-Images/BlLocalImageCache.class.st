@@ -440,7 +440,7 @@ BlLocalImageCache >> targetSize [
 { #category : #accessing }
 BlLocalImageCache >> taskitRunner [
 
-	^ taskitRunner ifNil: [ taskitRunner := BlHousekeepingWorkerPool ]
+	^ taskitRunner ifNil: [ taskitRunner := BlTktWorkerProvider nonUISinglePool ]
 ]
 
 { #category : #accessing }

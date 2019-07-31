@@ -117,14 +117,14 @@ BlImageCacheHousekeeper >> pruneCache [
 BlImageCacheHousekeeper >> schedulePruneCache [
 	"Prune the receiver's cache in the housekeeping process"
 
-	BlHousekeepingWorkerPool schedule: [ self pruneCache ] maxPoolSize: 1
+	BlTktWorkerProvider nonUISinglePool schedule: [ self pruneCache ]
 ]
 
 { #category : #private }
 BlImageCacheHousekeeper >> scheduleUpdateCurrentSize [
 	"Update the size of the receiver's cache in the housekeeping process"
 
-	cache taskitRunner schedule: [ self updateCurrentSize ] maxPoolSize: 1
+	cache taskitRunner schedule: [ self updateCurrentSize ]
 ]
 
 { #category : #private }
