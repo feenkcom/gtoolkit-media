@@ -10,6 +10,6 @@ TKTProfile class >> gtDevelopment [
 			(#poolWorkerProcess -> TKTDebuggWorkerProcess).
 			(#process -> TKTRawProcess).
 			(#errorHandler -> TKTDebuggerExceptionHandler).
-			(#processProvider -> BlTKTBackgroundProcessProvider new).
+			(#processProvider -> BlTktProcessProvider new).
 			(#serviceManager -> TKTServiceManager new)} asDictionary
 ]
