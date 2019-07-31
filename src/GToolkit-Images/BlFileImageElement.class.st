@@ -55,16 +55,14 @@ BlFileImageElement >> file: aFileReference [
 ]
 
 { #category : #accessing }
-BlFileImageElement >> maxPoolSize [
-	"Answer the maximum number of tasks that can be executed concurrently"
-
-	^4
-]
-
-{ #category : #accessing }
 BlFileImageElement >> queueEntry [
 	"Answer a TaskIt valuable that will update the receiver."
 
 	^BlFileImageLoadValuable file: file element: self
 
+]
+
+{ #category : #'as yet unclassified' }
+BlFileImageElement >> taskPool [
+	^ BlTktWorkerProvider highUICPUBoundPool 
 ]

@@ -135,13 +135,6 @@ BlAsyncElement >> initialize [
 	updateQueued := false.
 ]
 
-{ #category : #accessing }
-BlAsyncElement >> maxPoolSize [
-	"Answer the maximum number of tasks that can be executed concurrently"
-
-	^1
-]
-
 { #category : #testing }
 BlAsyncElement >> needsUpdate [
 	"Answer a boolean indicating whether the receiver needs to be updated (via an asynchronous task).
@@ -175,8 +168,7 @@ BlAsyncElement >> queueAsyncUpdate [
 
 	(updateQueued or: [ self needsUpdate not ]) ifTrue: [ ^self ].
 	updateQueued := true.
-	BlAsyncUIWorkerPool schedule: self queueEntry maxPoolSize: self maxPoolSize.
-
+	self taskPool schedule: self queueEntry.
 ]
 
 { #category : #'async processing' }
@@ -238,10 +230,16 @@ BlAsyncElement >> setDisplayRendering [
 	self addChild: self renderingElement
 ]
 
+{ #category : #'async processing' }
+BlAsyncElement >> taskPool [
+	<return: #TKTCommonQueueWorkerPool>
+	^ self subclassResponsibility
+]
+
 { #category : #accessing }
 BlAsyncElement >> taskitRunner [
 
-	^ taskitRunner ifNil: [ taskitRunner := BlAsyncUIWorkerPool ]
+	^ taskitRunner ifNil: [ taskitRunner := BlTktWorkerProvider nonUISinglePool ]
 ]
 
 { #category : #accessing }
