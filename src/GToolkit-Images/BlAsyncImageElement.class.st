@@ -79,9 +79,9 @@ BlAsyncImageElement >> entry: aBlImageCacheEntry [
 	This can be called from a background process, thus ensure the invalidation is done in the UI process"
 
 	entry := aBlImageCacheEntry.
-	updateQueued := false.
 	bitmap := nil.
-	entry ifNotNil: [ self enqueueTask: (BlTaskAction new action: [ 
+	entry ifNotNil: [ 
+		self enqueueTask: (BlTaskAction new action: [ 
 			self 
 				removeChildren;
 				invalidate ]) ]

@@ -29,6 +29,6 @@ BlFileImageLoadValuable >> initializeFile: aFileReference element: aBlElement [
 BlFileImageLoadValuable >> updateElement [
 	"Ask the cache to update the receiver's element"
 
-	^BlWorkerImageCache current fileAt: file size: self extent max for: element
+	^BlLocalImageCache current fileAt: file size: self extent max for: element
 
 ]

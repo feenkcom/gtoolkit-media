@@ -1,6 +1,7 @@
 "
 BlLocalImageCache provides a cache of file system and network images at specified sizes.
 
+- The cache is stored on disk.
 - Cache entries are created lazily, i.e. only when a cache entry of the specified size is requested.
 - If the original image size is smaller than the cache size, the original will be returned.
 
@@ -49,12 +50,8 @@ Class {
 		'cacheRoot',
 		'fileRoot',
 		'networkRoot',
-		'maxCacheSize',
-		'imageSizes',
 		'taskitRunner',
-		'housekeeper',
-		'hits',
-		'misses'
+		'housekeeper'
 	],
 	#classVars : [
 		'Current'
@@ -65,13 +62,13 @@ Class {
 { #category : #accessing }
 BlLocalImageCache class >> current [ 
 
-	^Current ifNil: [ 	Current := self default setDefaultLocation ]
+	^Current ifNil: [ self default. Current ]
 ]
 
 { #category : #accessing }
 BlLocalImageCache class >> default [ 
 	
-	^ BlLocalImageCache new
+	self useMemoryImageCache.
 
 
 	"Answer the default instance to use.
@@ -81,11 +78,25 @@ BlLocalImageCache class >> default [
 		ifFalse: [ BlLocalImageCache new ]"
 ]
 
+{ #category : #'class initialization' }
+BlLocalImageCache class >> initialize [
+
+	SessionManager default
+		registerUserClassNamed: self name.
+]
+
+{ #category : #'system startup' }
+BlLocalImageCache class >> shutDown: quitting [
+	"Give the current cache the chance to shutdown"
+
+	Current ifNotNil: [ Current shutDown: quitting ]
+]
+
 { #category : #managing }
 BlLocalImageCache class >> stopCurrent [
 	<script>
 	"Flush the default image cache and clear the pointer.
-	Note that this currently leaves 3 directories behind"
+	Note that this currently leaves 3 directories behind if the cache is on-disk"
 
 	Current ifNil: [ ^self ].
 	Current flush.
@@ -101,14 +112,13 @@ BlLocalImageCache class >> useLocalImageCache [
 	Current := BlLocalImageCache new setDefaultLocation.
 ]
 
-{ #category : #private }
-BlLocalImageCache >> answerForm: aForm size: aSize isOriginal: isOriginal [
+{ #category : #managing }
+BlLocalImageCache class >> useMemoryImageCache [
+	"Force the use of BlMemoryImageCache"
+	<script>
 
-	^BlImageCacheEntry new
-		isSmallest: (aSize <= imageSizes first);
-		isOriginal: isOriginal;
-		form: aForm;
-		yourself
+	self stopCurrent.
+	Current := BlMemoryImageCache new.
 ]
 
 { #category : #private }
@@ -154,44 +164,11 @@ BlLocalImageCache >> cacheRoot: aFileReference [
 	self initHousekeeping.
 ]
 
-{ #category : #private }
-BlLocalImageCache >> cacheSizeFor: minImageSize [
-	"Answer the cached image size just larger than minImageSize"
-
-	minImageSize ifNil: [ ^nil ].
-	^imageSizes detect: [ :size | minImageSize <= size ]
-							ifNone: [ nil ].
-	
-]
-
-{ #category : #manage }
-BlLocalImageCache >> clearStats [
-
-	hits := misses := 0.
-]
-
 { #category : #accessing }
 BlLocalImageCache >> currentSize [ 
 	"Answer the approximate size of the receiver"
 
 	^housekeeper currentSize
-]
-
-{ #category : #private }
-BlLocalImageCache >> defaultImageSizes [
-	"Answer the default cache sizes to use, i.e.
-	#(200, <in the middle>, <Display max dimension>)"
-
-	| newImageSizes newSize |
-
-	"Start with the larger dimension of the display and divide by 4 down to 200"
-	newSize := Display width max: Display height.
-	newImageSizes := Array new: 3.
-	newImageSizes
-		at: 1 put: 200;
-		at: 2 put: (newSize // 2);
-		at: 3 put: newSize.
-	^newImageSizes
 ]
 
 { #category : #private }
@@ -285,32 +262,6 @@ BlLocalImageCache >> flush [
 	self clearStats.
 ]
 
-{ #category : #private }
-BlLocalImageCache >> formFor: aFileReference [
-	"Answer the form in the specified file"
-
-	^ImageReadWriter gtFormFromBuffer: (self getBufferFor: aFileReference).
-]
-
-{ #category : #private }
-BlLocalImageCache >> getBufferFor: aFileReference [
-	"Answer the contents of the specified file in a ByteArray.
-	While this method is synchronous, file access is async"
-
-	| file asyncFile fileSemaphore buffer |
-
-	file := aFileReference asFileReference.
-	asyncFile := AsyncFile new.
-	fileSemaphore := Semaphore new.
-	asyncFile open: file pathString forWrite: false.
-	[ asyncFile readByteCount: file size fromFilePosition: 0 onCompletionDo: 
-		[ :buf | buffer := buf.  fileSemaphore signal ].
-        fileSemaphore wait. ] ensure: [ asyncFile close ].
-	"Hack to work around AsyncFile returning a string instead of a ByteArray"
-	ByteArray adoptInstance: buffer.
-	^buffer
-]
-
 { #category : #inspecting }
 BlLocalImageCache >> gtStatusFor: aView [
 	<gtView>
@@ -343,36 +294,11 @@ BlLocalImageCache >> gtStatusFor: aView [
 	^aList
 ]
 
-{ #category : #accessing }
-BlLocalImageCache >> hitRate [
-	"Answer the receiver's hit rate"
-
-	| totalAccesses |
-
-	totalAccesses := self totalAccesses.
-	^totalAccesses = 0
-		ifTrue: [ 0 ]
-		ifFalse: [ hits asFloat / totalAccesses asFloat ]
-]
-
-{ #category : #accessing }
-BlLocalImageCache >> hits [
-	^ hits
-]
-
 { #category : #private }
 BlLocalImageCache >> housekeeper [
 	"This is only here to facilitate testing"
 
 	^housekeeper
-]
-
-{ #category : #configuration }
-BlLocalImageCache >> imageSizes: anArray [
-	"Set the image sizes to cache.
-	The longer dimension of the image will be the size specified."
-
-	imageSizes := anArray sorted.
 ]
 
 { #category : #initialization }
@@ -386,27 +312,9 @@ BlLocalImageCache >> initHousekeeping [
 { #category : #initialization }
 BlLocalImageCache >> initialize [
 
+	super initialize.
 	self maxCacheSize: 100000000. "100MB"
-	self imageSizes: self defaultImageSizes.
-	hits := 0.
-	misses := 0.
-]
 
-{ #category : #accessing }
-BlLocalImageCache >> maxCacheSize [ 
-
-	^maxCacheSize 
-]
-
-{ #category : #configuration }
-BlLocalImageCache >> maxCacheSize: anInteger [
-
-	maxCacheSize := anInteger
-]
-
-{ #category : #accessing }
-BlLocalImageCache >> misses [
-	^ misses
 ]
 
 { #category : #private }
@@ -416,18 +324,16 @@ BlLocalImageCache >> networkRoot [
 	^networkRoot
 ]
 
-{ #category : #private }
-BlLocalImageCache >> set: anObject form: aForm size: anInteger isOriginal: aBoolean [
-	"Set the entry in anObject with the supplied information"
-
-	^anObject entry: (self answerForm: aForm size: anInteger isOriginal: aBoolean)
-]
-
 { #category : #initialization }
 BlLocalImageCache >> setDefaultLocation [
 
 	self cacheRoot: (FileLocator temp / 'gtoolkit' / 'cache' / 'images') resolve.
 
+]
+
+{ #category : #'system startup' }
+BlLocalImageCache >> shutDown: quitting [
+	"By default, do nothing when the session is being shut down"
 ]
 
 { #category : #private }
@@ -446,12 +352,6 @@ BlLocalImageCache >> taskitRunner [
 { #category : #accessing }
 BlLocalImageCache >> taskitRunner: anObject [
 	taskitRunner := anObject
-]
-
-{ #category : #accessing }
-BlLocalImageCache >> totalAccesses [
-
-	^hits + misses
 ]
 
 { #category : #'accessing - cache' }

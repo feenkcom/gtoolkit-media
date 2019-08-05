@@ -58,11 +58,11 @@ BlFileImageElement >> file: aFileReference [
 BlFileImageElement >> queueEntry [
 	"Answer a TaskIt valuable that will update the receiver."
 
-	^BlFileImageLoadValuable file: file element: self
+	^(BlFileImageLoadValuable file: file element: self) asBlTktLoggingCommand
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 BlFileImageElement >> taskPool [
 	^ BlTktWorkerProvider highUICPUBoundPool 
 ]

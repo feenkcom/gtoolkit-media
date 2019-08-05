@@ -3,7 +3,7 @@ BlLocalImageCacheTestEntry acts as a proxy for ${class:name=BlAsyncImageElement}
 
 "
 Class {
-	#name : #BlLocalImageCacheTestEntry,
+	#name : #BlImageCacheTestEntry,
 	#superclass : #Object,
 	#instVars : [
 		'entry'
@@ -12,11 +12,11 @@ Class {
 }
 
 { #category : #accessing }
-BlLocalImageCacheTestEntry >> entry [
+BlImageCacheTestEntry >> entry [
 	^ entry
 ]
 
 { #category : #accessing }
-BlLocalImageCacheTestEntry >> entry: anObject [
+BlImageCacheTestEntry >> entry: anObject [
 	entry := anObject
 ]

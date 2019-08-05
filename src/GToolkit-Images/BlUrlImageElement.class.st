@@ -47,7 +47,7 @@ BlUrlImageElement >> queueEntry [
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 BlUrlImageElement >> taskPool [
 	^ BlTktWorkerProvider highUIExternalResourceBoundPool
 ]

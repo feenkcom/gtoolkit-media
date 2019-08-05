@@ -17,3 +17,8 @@ Class {
 ManifestGToolkitImages class >> ruleRBRefersToClassRuleV1FalsePositive [
 	^ #(#(#(#RGMethodDefinition #(#BlLocalImageCache #fileAt:size:for: #false)) #'2019-05-17T07:15:20.731634+02:00') )
 ]
+
+{ #category : #'code-critics' }
+ManifestGToolkitImages class >> ruleRBUnaryAccessingMethodWithoutReturnRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#BlMemoryImageCache #flush #false)) #'2019-07-30T08:15:40.267586+02:00') )
+]

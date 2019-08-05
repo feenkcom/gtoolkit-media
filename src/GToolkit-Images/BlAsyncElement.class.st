@@ -54,8 +54,7 @@ Class {
 		'visibleElement',
 		'taskitRunner',
 		'errorStencil',
-		'asyncException',
-		'updateQueued'
+		'asyncException'
 	],
 	#category : #'GToolkit-Images-Elements'
 }
@@ -80,7 +79,6 @@ BlAsyncElement >> asyncException: anException [
 
 	anException freeze.
 	asyncException := anException.
-	updateQueued := false.
 	self enqueueTask: (BlTaskAction new action: [ 
 		asyncException 
 			ifNil: [ self removeChildren ]
@@ -112,27 +110,12 @@ BlAsyncElement >> errorStencil: aBrStencil [
 	errorStencil := aBrStencil asStencil
 ]
 
-{ #category : #'async processing' }
-BlAsyncElement >> flagUpdateDone [
-	"Indicate that the asynchronous update has completed"
-
-	updateQueued := false
-]
-
-{ #category : #'async processing' }
-BlAsyncElement >> flagUpdateQueued [
-	"Indicate that an asynchronous update is queued
-	(thus further updates shouldn't be queued until it is done."
-
-	updateQueued := true
-]
-
 { #category : #initialization }
 BlAsyncElement >> initialize [ 
 
 	super initialize.
 	self setDefaultErrorStencil.
-	updateQueued := false.
+
 ]
 
 { #category : #testing }
@@ -166,8 +149,7 @@ BlAsyncElement >> priority: anInteger [
 BlAsyncElement >> queueAsyncUpdate [
 	"Queue a task to update the receiver's state."
 
-	(updateQueued or: [ self needsUpdate not ]) ifTrue: [ ^self ].
-	updateQueued := true.
+	self needsUpdate ifFalse: [ ^self ].
 	self taskPool schedule: self queueEntry.
 ]
 
@@ -245,12 +227,6 @@ BlAsyncElement >> taskitRunner [
 { #category : #accessing }
 BlAsyncElement >> taskitRunner: anObject [
 	taskitRunner := anObject
-]
-
-{ #category : #'async processing' }
-BlAsyncElement >> updateQueued [
-
-	^updateQueued 
 ]
 
 { #category : #accessing }
