@@ -25,10 +25,26 @@ Class {
 	#category : #'GToolkit-Images-TaskIt'
 }
 
+{ #category : #accessing }
+BlAsyncElementValuable class >> element: aBlElement [
+
+	^self new element: aBlElement 
+]
+
 { #category : #converting }
 BlAsyncElementValuable >> asTask [ 
 
 	^TKTTask valuable: self
+]
+
+{ #category : #accessing }
+BlAsyncElementValuable >> element [
+	^ element
+]
+
+{ #category : #accessing }
+BlAsyncElementValuable >> element: anObject [
+	element := anObject
 ]
 
 { #category : #acccessing }
