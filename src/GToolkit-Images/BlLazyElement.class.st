@@ -40,6 +40,13 @@ BlLazyElement >> buildElement [
 
 ]
 
+{ #category : #drawing }
+BlLazyElement >> drawOnSpartaCanvas: aCanvas [
+
+	super drawOnSpartaCanvas: aCanvas.
+	element ifNil: [ self queueAsyncUpdate ].
+]
+
 { #category : #accessing }
 BlLazyElement >> element [
 	^ element
@@ -74,8 +81,7 @@ BlLazyElement >> elementBuilder: anObject [
 BlLazyElement >> needsUpdate [
 	"Answer a boolean indicating whether the receiver needs to be udpated"
 
-	super needsUpdate ifFalse: [ ^false ].
-	^element isNil and: [ asyncException isNil ].
+	^super needsUpdate and: [ element isNil ].
 
 ]
 

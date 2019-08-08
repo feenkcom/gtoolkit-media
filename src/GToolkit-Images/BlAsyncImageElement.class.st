@@ -31,6 +31,14 @@ Class {
 	#category : #'GToolkit-Images-Elements'
 }
 
+{ #category : #layout }
+BlAsyncImageElement >> applyLayoutIn: aBlBounds [
+
+	
+	super applyLayoutIn: aBlBounds.
+	self queueAsyncUpdate
+]
+
 { #category : #initialization }
 BlAsyncImageElement >> clearForm [
 
@@ -112,6 +120,13 @@ BlAsyncImageElement >> needsUpdate [
 	^(ratio < 0.25 and: [ entry isSmallest not ]) or:
 		[ ratio > 4 and: [ entry isOriginal not ] ]
 
+]
+
+{ #category : #'async processing' }
+BlAsyncImageElement >> onAddedToSceneGraph [
+
+	super onAddedToSceneGraph.
+	self queueAsyncUpdate.
 ]
 
 { #category : #'async processing' }

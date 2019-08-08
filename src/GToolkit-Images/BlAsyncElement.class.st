@@ -59,14 +59,6 @@ Class {
 	#category : #'GToolkit-Images-Elements'
 }
 
-{ #category : #layout }
-BlAsyncElement >> applyLayoutIn: aBlBounds [
-
-	
-	super applyLayoutIn: aBlBounds.
-	self queueAsyncUpdate
-]
-
 { #category : #accessing }
 BlAsyncElement >> asyncException [
 	^ asyncException
@@ -125,13 +117,6 @@ BlAsyncElement >> needsUpdate [
 
 	^asyncException isNil and: [ self isAttachedToSceneGraph ]
 
-]
-
-{ #category : #'async processing' }
-BlAsyncElement >> onAddedToSceneGraph [
-
-	super onAddedToSceneGraph.
-	self queueAsyncUpdate.
 ]
 
 { #category : #accessing }
