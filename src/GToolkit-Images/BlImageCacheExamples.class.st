@@ -120,6 +120,66 @@ BlImageCacheExamples >> getCachedSize700 [
 	self assert: entry isOriginal not.
 ]
 
+{ #category : #tests }
+BlImageCacheExamples >> getCachedUrlSize300 [
+	<gtExample>
+	<after: #deleteTestImages>
+
+	| cache entry cachedForm maxDimension element |
+
+	cache := self newCache.
+	element := BlImageCacheTestEntry new.
+	cache url: self image1200 asZnUrl size: 300 for: element.
+	entry := element entry.
+	cachedForm := entry form.
+	maxDimension := cachedForm extent max.
+	self 
+		assert: maxDimension 
+		equals: 400.
+	self assert: entry isSmallest not.
+	self assert: entry isOriginal not.
+]
+
+{ #category : #tests }
+BlImageCacheExamples >> getCachedUrlSize400 [
+	<gtExample>
+	<after: #deleteTestImages>
+
+	| cache entry cachedForm maxDimension element |
+
+	cache := self newCache.
+	element := BlImageCacheTestEntry new.
+	cache url: self image400 asZnUrl size: 400 for: element.
+	entry := element entry.
+	cachedForm := entry form.
+	maxDimension := cachedForm extent max.
+	self 
+		assert: maxDimension 
+		equals: 400.
+	self assert: entry isSmallest not.
+	self assert: entry isOriginal.
+]
+
+{ #category : #tests }
+BlImageCacheExamples >> getCachedUrlSize800 [
+	<gtExample>
+	<after: #deleteTestImages>
+
+	| cache entry cachedForm maxDimension element |
+
+	cache := self newCache.
+	element := BlImageCacheTestEntry new.
+	cache url: self image400 asZnUrl size: 800 for: element.
+	entry := element entry.
+	cachedForm := entry form.
+	maxDimension := cachedForm extent max.
+	self 
+		assert: maxDimension 
+		equals: 400.
+	self assert: entry isSmallest not.
+	self assert: entry isOriginal.
+]
+
 { #category : #accessing }
 BlImageCacheExamples >> image1200 [
 
