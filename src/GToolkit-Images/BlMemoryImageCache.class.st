@@ -72,7 +72,7 @@ BlMemoryImageCache >> fileAt: aFileReference size: minImageSize for: anObject [
 	cacheKey := self cacheFileFor: fileReference size: cacheSize.
 	(self entryAt: cacheKey) ifNotNil: [ :entry | 
 		hits := hits + 1.
-		^entry ].
+		^anObject entry: entry ].
 
 	form := self formFor: fileReference.
 	misses := misses + 1.

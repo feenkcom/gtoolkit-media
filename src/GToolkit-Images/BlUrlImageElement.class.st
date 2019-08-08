@@ -43,7 +43,10 @@ BlUrlImageElement class >> url: aZnUrl [
 BlUrlImageElement >> queueEntry [
 	"Answer a TaskIt valuable that will update the receiver."
 
-	^BlUrlImageLoadValuable url: url element: self
+	^(BlTktUnresponsiveCommand new 
+		valuable: (BlUrlImageLoadValuable url: url element: self);
+		name: url asString;
+		yourself) asBlTktLoggingCommand
 
 ]
 

@@ -58,7 +58,10 @@ BlFileImageElement >> file: aFileReference [
 BlFileImageElement >> queueEntry [
 	"Answer a TaskIt valuable that will update the receiver."
 
-	^(BlFileImageLoadValuable file: file element: self) asBlTktLoggingCommand
+	^(BlTktUnresponsiveCommand new 
+		valuable: (BlFileImageLoadValuable file: file element: self);
+		name: file pathString;
+		yourself) asBlTktLoggingCommand
 
 ]
 
