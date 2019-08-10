@@ -1,24 +1,30 @@
 "
-BlLazyElement is intended to perform lazy rendering of an element, deferring the rendering until the element actually becomes visible in the window.  E.g. if the window can be scrolled and the element is not visible, no action is taken.
+BlLazyElement lazily renders its child element deferring the rendering until the element actually becomes visible in the window.  E.g. if the window can be scrolled and the element is not visible, no action is taken.
 
-The initial version only partially implements this goal, it currently renders the element in a background priority queue so that elements that are visible are rendered first, followed by their distance from the visible portion of the window.
 
 Public API and Key Messages
 
-- message one   
-- message two 
-- (for bonus points) how to create instances.
+- elementBuilder:   a valuable, typically a BlockClosure, that returns the child element
 
-   One simple example is simply gorgeous.
+[[[
+BlLazyElement new elementBuilder:
+	[ BlTextElement new 
+		text: 'hello world' asRopedText;
+		constraintsDo: [ :c |
+			c horizontal matchParent.
+			c vertical matchParent. ] ];
+	constraintsDo: [ :c |
+			c horizontal matchParent.
+			c vertical matchParent. ]
+]]]
  
-Internal Representation and Key Implementation Points.
+!!Internal Representation and Key Implementation Points.
 
-    Instance Variables
-	element:		<Object>
-	elementBuilder:		<Object>
+!!!Instance Variables
+	element:				<BlElement>
+	elementBuilder:		<BlockClosure>
 
 
-    Implementation Points
 "
 Class {
 	#name : #BlLazyElement,
