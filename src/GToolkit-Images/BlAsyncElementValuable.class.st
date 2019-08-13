@@ -47,20 +47,8 @@ BlAsyncElementValuable >> element: anObject [
 	element := anObject
 ]
 
-{ #category : #acccessing }
-BlAsyncElementValuable >> extent [ 
-	"Answer the receiver's element extent if open, or nil"
-
-	| extent |
-
-	extent := element extent.
-	^(extent x = 0 or: [ extent y = 0 ]) 
-		ifTrue: [ nil ]
-		ifFalse: [ extent ]
-]
-
 { #category : #accessing }
-BlAsyncElementValuable >> taskPriority [
+BlAsyncElementValuable >> entryPriority [
 	"Answer the task priority of the receiver.
 	If the element is visible, answer 0 (highest priority), otherwise answer the distance from the center of the display"
 
@@ -83,6 +71,18 @@ BlAsyncElementValuable >> taskPriority [
 	(rootBounds containsRect: elementBounds) ifTrue: [ ^1 ].
 	"Otherwise, priority is proportional to distance from viewable area"
 	^rootBounds center distanceTo: elementBounds center
+]
+
+{ #category : #acccessing }
+BlAsyncElementValuable >> extent [ 
+	"Answer the receiver's element extent if open, or nil"
+
+	| extent |
+
+	extent := element extent.
+	^(extent x = 0 or: [ extent y = 0 ]) 
+		ifTrue: [ nil ]
+		ifFalse: [ extent ]
 ]
 
 { #category : #private }
