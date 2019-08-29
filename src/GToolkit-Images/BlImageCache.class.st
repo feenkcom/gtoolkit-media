@@ -93,7 +93,8 @@ BlImageCache >> getBufferFor: aFileReference [
 	file := aFileReference asFileReference.
 	asyncFile := AsyncFile new.
 	fileSemaphore := Semaphore new.
-	asyncFile open: file pathString forWrite: false.
+	(asyncFile open: file pathString forWrite: false) ifNil: 
+		[ ^file binaryReadStreamDo: [ :stream | stream upToEnd ] ].
 	[ asyncFile readByteCount: file size fromFilePosition: 0 onCompletionDo: 
 		[ :buf | buffer := buf.  fileSemaphore signal ].
         fileSemaphore wait. ] ensure: [ asyncFile close ].
