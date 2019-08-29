@@ -98,7 +98,9 @@ BlLazyElement >> queueEntry [
 	^(BlTktUnresponsiveCommand new 
 		valuable: (BlLazyElementValuable element: self);
 		name: 'BlLazyElement(', elementBuilder printString, ')';
-		yourself) asBlTktLoggingCommand
+		yourself) asBlTktLoggingCommand asBlTktSingleCommand
+			identifier: self.
+
 
 ]
 

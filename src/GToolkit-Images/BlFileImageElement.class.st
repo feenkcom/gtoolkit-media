@@ -61,7 +61,8 @@ BlFileImageElement >> queueEntry [
 	^(BlTktUnresponsiveCommand new 
 		valuable: (BlFileImageLoadValuable file: file element: self);
 		name: file pathString;
-		yourself) asBlTktLoggingCommand
+		yourself) asBlTktLoggingCommand asBlTktSingleCommand
+			identifier: self.
 
 ]
 

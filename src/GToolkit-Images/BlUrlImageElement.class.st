@@ -46,7 +46,9 @@ BlUrlImageElement >> queueEntry [
 	^(BlTktUnresponsiveCommand new 
 		valuable: (BlUrlImageLoadValuable url: url element: self);
 		name: url asString;
-		yourself) asBlTktLoggingCommand
+		yourself) asBlTktLoggingCommand asBlTktSingleCommand
+			identifier: self.
+
 
 ]
 
