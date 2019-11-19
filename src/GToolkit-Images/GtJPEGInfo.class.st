@@ -6,6 +6,8 @@ Class {
 		'OFFSET_HEIGHT',
 		'OFFSET_MAJOR',
 		'OFFSET_MINOR',
+		'OFFSET_SCALE_DENOM',
+		'OFFSET_SCALE_NUM',
 		'OFFSET_WIDTH'
 	],
 	#category : #'GToolkit-Images-JPEG'
@@ -16,10 +18,12 @@ GtJPEGInfo class >> fieldsDesc [
 	<script: 'self rebuildFieldAccessors'>
 
 	^#(
-		uint32 major
-		uint32 minor
+		uint16 major
+		uint16 minor
 		uint32 width
 		uint32 height
+		uint16 scale_num
+		uint16 scale_denom
 		char*	 error_message)
 ]
 
@@ -50,25 +54,49 @@ GtJPEGInfo >> height: anObject [
 { #category : #'accessing structure variables' }
 GtJPEGInfo >> major [
 	"This method was automatically generated"
-	^handle unsignedLongAt: OFFSET_MAJOR
+	^handle unsignedShortAt: OFFSET_MAJOR
 ]
 
 { #category : #'accessing structure variables' }
 GtJPEGInfo >> major: anObject [
 	"This method was automatically generated"
-	handle unsignedLongAt: OFFSET_MAJOR put: anObject
+	handle unsignedShortAt: OFFSET_MAJOR put: anObject
 ]
 
 { #category : #'accessing structure variables' }
 GtJPEGInfo >> minor [
 	"This method was automatically generated"
-	^handle unsignedLongAt: OFFSET_MINOR
+	^handle unsignedShortAt: OFFSET_MINOR
 ]
 
 { #category : #'accessing structure variables' }
 GtJPEGInfo >> minor: anObject [
 	"This method was automatically generated"
-	handle unsignedLongAt: OFFSET_MINOR put: anObject
+	handle unsignedShortAt: OFFSET_MINOR put: anObject
+]
+
+{ #category : #'accessing structure variables' }
+GtJPEGInfo >> scale_denom [
+	"This method was automatically generated"
+	^handle unsignedShortAt: OFFSET_SCALE_DENOM
+]
+
+{ #category : #'accessing structure variables' }
+GtJPEGInfo >> scale_denom: anObject [
+	"This method was automatically generated"
+	handle unsignedShortAt: OFFSET_SCALE_DENOM put: anObject
+]
+
+{ #category : #'accessing structure variables' }
+GtJPEGInfo >> scale_num [
+	"This method was automatically generated"
+	^handle unsignedShortAt: OFFSET_SCALE_NUM
+]
+
+{ #category : #'accessing structure variables' }
+GtJPEGInfo >> scale_num: anObject [
+	"This method was automatically generated"
+	handle unsignedShortAt: OFFSET_SCALE_NUM put: anObject
 ]
 
 { #category : #'accessing structure variables' }
