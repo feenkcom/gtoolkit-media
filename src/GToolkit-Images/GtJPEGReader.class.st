@@ -1,3 +1,36 @@
+"
+GtJPEGReader is the main interface to reading JPEG images with libGtJPEG.so.  Currently there are two public methods for reading images in to Forms:
+
+- formFromFileNamed:
+- formFromFileNamed:sizeFor:
+
+The first takes a file name and answers a GtJPEGEntry of the original size.
+
+The second takes a Point as the target size of the Form.  libGtJPEG.so currently only scales the image in multiples of 1/8th.  The answered Form will be the next step up from the requested image size, e.g. if the native image size is 400@200 and 180@80 is requested the resulting form will be 200@100:
+
+- 3/8ths of 400@200 is 150@75
+- 4/8ths of 400@200 is 200@100
+
+so 4/8ths will be used and a GtJPEGEntry answered.
+
+Currently GtJPEGEntry answers the form, width, height and scale factor used.
+
+Public API and Key Messages
+
+- formFromFileNamed:
+- formFromFileNamed:sizeFor:
+
+!!Internal Representation and Key Implementation Points.
+
+!!!Instance Variables
+	entry:				<GtJPEGEntry> The entry that is answered after reading the image.
+	file:				<FileReference> The jpeg file to be read.
+	targetSize:		<Point> The target size which the image should be scaled to (see above).
+
+
+!!!Implementation Points
+
+"
 Class {
 	#name : #GtJPEGReader,
 	#superclass : #Object,

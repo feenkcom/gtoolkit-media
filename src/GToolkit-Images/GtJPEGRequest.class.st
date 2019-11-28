@@ -1,3 +1,9 @@
+"
+GtJPEGRequest is a memory structure that is used to pass information to the library about processing to be performed on the image before answering it. 
+
+Currently only image scaling is supported (by specifying the target width and height).
+
+"
 Class {
 	#name : #GtJPEGRequest,
 	#superclass : #FFIExternalStructure,
