@@ -66,7 +66,7 @@ GtJPEGReader class >> formFromFileNamed: fileName sizeFor: targetSize [
 	^self new 
 		file: fileName;
 		targetSize: targetSize;
-		nextImage
+		entry
 ]
 
 { #category : #'image reading/writing' }
