@@ -20,15 +20,18 @@ Public API and Key Messages
 - formFromFileNamed:
 - formFromFileNamed:sizeFor:
 
-!!Internal Representation and Key Implementation Points.
+1. # Internal Representation and Key Implementation Points.
 
-!!!Instance Variables
+
+1. ## Instance Variables
+
 	entry:				<GtJPEGEntry> The entry that is answered after reading the image.
 	file:				<FileReference> The jpeg file to be read.
 	targetSize:		<Point> The target size which the image should be scaled to (see above).
 
 
-!!!Implementation Points
+1. ## Implementation Points
+
 
 "
 Class {

@@ -1,6 +1,7 @@
 "
 GtJPEGInfo is an internal component of the JPEG reader.  When calling out to libGtJPEG it will allocate a structure containing information or an error message relating to the image being read.
 
+
 "
 Class {
 	#name : #GtJPEGInfo,

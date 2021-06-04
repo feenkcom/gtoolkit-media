@@ -4,9 +4,11 @@ GtJPEGEntry is the object answered when a JPG file is read using GtJPEGReader.
 For additional information and an overview of usage, please see GtJPEGReader.
 
 
-!!Internal Representation and Key Implementation Points.
+1. # Internal Representation and Key Implementation Points.
 
-!!!Instance Variables
+
+1. ## Instance Variables
+
 	form:		<Object>
 	height:		<Object>
 	scale:		<Object>
@@ -14,6 +16,8 @@ For additional information and an overview of usage, please see GtJPEGReader.
 
 
     Implementation Points
+
+
 "
 Class {
 	#name : #GtJPEGEntry,

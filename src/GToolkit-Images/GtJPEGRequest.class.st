@@ -3,6 +3,7 @@ GtJPEGRequest is a memory structure that is used to pass information to the libr
 
 Currently only image scaling is supported (by specifying the target width and height).
 
+
 "
 Class {
 	#name : #GtJPEGRequest,
