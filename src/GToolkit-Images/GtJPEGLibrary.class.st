@@ -1,6 +1,7 @@
 "
 GtJPEGLibrary is the external library used to read JPEG images.
 
+
 "
 Class {
 	#name : #GtJPEGLibrary,
